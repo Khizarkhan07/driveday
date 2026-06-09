@@ -93,8 +93,8 @@ async function persistDocument(
   buffer: Buffer
 ): Promise<{ id: string; storageKey: string }> {
   const storage = getDocumentStorage();
-  const storageKey = `policies/${policyId}/${type.toLowerCase()}.pdf`;
-  await storage.save(storageKey, buffer, "application/pdf");
+  const key = `policies/${policyId}/${type.toLowerCase()}.pdf`;
+  const storageKey = await storage.save(key, buffer, "application/pdf");
 
   const document = await prisma.document.create({
     data: {
