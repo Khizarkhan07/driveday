@@ -1,8 +1,24 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { type DocumentSummary, type DocumentType } from "@motorcover/shared-types";
-import { api, apiBaseUrl } from "../lib/api";
+import { api, apiBaseUrl, sessionToken } from "../lib/api";
 import { useCurrentUser } from "../lib/auth";
+
+async function downloadDocument(docId: string, filename: string) {
+  const token = sessionToken.get();
+  const res = await fetch(`${apiBaseUrl}/portal/documents/${docId}/download`, {
+    credentials: "include",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error("Download failed");
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 import { Badge, Card } from "../components/ui";
 
 interface PolicyDetailResponse {
@@ -141,11 +157,9 @@ export function PortalPolicyDetailPage() {
               <ul className="space-y-2">
                 {policy.documents.map((doc) => (
                   <li key={doc.id}>
-                    <a
-                      href={`${apiBaseUrl}/portal/documents/${doc.id}/download`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-between p-3 rounded-xl bg-ink-800/60 border border-ink-700/50 hover:border-brand-400/40 hover:bg-ink-800 transition group"
+                    <button
+                      onClick={() => downloadDocument(doc.id, `${doc.type.toLowerCase()}.pdf`)}
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-ink-800/60 border border-ink-700/50 hover:border-brand-400/40 hover:bg-ink-800 transition group"
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-xl">{DOCUMENT_ICONS[doc.type]}</span>
@@ -154,7 +168,7 @@ export function PortalPolicyDetailPage() {
                       <span className="text-xs font-semibold text-brand-400 group-hover:text-brand-300 transition">
                         Download PDF →
                       </span>
-                    </a>
+                    </button>
                   </li>
                 ))}
               </ul>
