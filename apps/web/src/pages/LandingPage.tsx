@@ -88,19 +88,6 @@ export function LandingPage() {
                 </div>
               </div>
 
-              {/* Pricing pills */}
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { label: "18–24 yrs", price: "£50" },
-                  { label: "25–39 yrs", price: "£40" },
-                  { label: "40–60 yrs", price: "£30" },
-                ].map((tier) => (
-                  <div key={tier.label} className="bg-ink-800/60 border border-ink-700/50 rounded-xl px-4 py-2.5 text-center">
-                    <p className="text-xs text-ink-400">{tier.label}</p>
-                    <p className="text-white font-extrabold text-lg">{tier.price}</p>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Right: quote box */}
