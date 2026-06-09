@@ -36,7 +36,7 @@ export const env = {
   resendApiKey: required("RESEND_API_KEY", "re_demo_placeholder"),
   emailFrom: process.env.EMAIL_FROM ?? "Day Drive <onboarding@resend.dev>",
 
-  documentStorage: (process.env.DOCUMENT_STORAGE ?? "local") as "local" | "s3",
+  documentStorage: (process.env.DOCUMENT_STORAGE ?? "local") as "local" | "s3" | "blob",
   localDocsDir: process.env.LOCAL_DOCS_DIR ?? "storage",
   s3Bucket: process.env.S3_BUCKET,
   s3Region: process.env.S3_REGION,
