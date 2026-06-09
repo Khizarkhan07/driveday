@@ -13,7 +13,9 @@ declare global {
 
 /** Populates req.user if a valid session cookie is present, but does not block the request. */
 export async function attachUser(req: Request, _res: Response, next: NextFunction) {
-  const token = req.cookies?.[SESSION_COOKIE_NAME];
+  const authHeader = req.headers.authorization;
+  const token = (authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null)
+    ?? req.cookies?.[SESSION_COOKIE_NAME];
   if (!token) return next();
 
   const userId = await getUserIdForSessionToken(token);

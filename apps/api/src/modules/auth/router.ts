@@ -60,6 +60,7 @@ authRouter.post("/signup", async (req, res) => {
   }
 
   return res.status(201).json({
+    token,
     user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName },
   });
 });
@@ -81,6 +82,7 @@ authRouter.post("/login", async (req, res) => {
   await logEvent("User", user.id, "user.logged_in");
 
   return res.json({
+    token,
     user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName },
   });
 });
