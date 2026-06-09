@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-ink-950 text-white font-sans;
+}
+
+/* Smooth scrollbar on dark bg */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0b0c1e; }
+::-webkit-scrollbar-thumb { background: #2d3047; border-radius: 3px; }

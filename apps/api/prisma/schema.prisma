@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+  quotes       Quote[]
+  policies     Policy[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Vehicle {
+  id                String   @id @default(cuid())
+  registration      String
+  make              String?
+  model             String?
+  colour            String?
+  yearOfManufacture Int?
+  fuelType          String?
+  vehicleType       String   @default("car")
+  source            String // "mock" | "oneautoapi" | "dvla"
+  rawLookupJson     Json?
+  createdAt         DateTime @default(now())
+  quotes            Quote[]
+
+  @@index([registration])
+}
+
+enum QuoteStatus {
+  DRAFT
+  SAVED
+  EXPIRED
+  CONVERTED
+}
+
+model Quote {
+  id               String      @id @default(cuid())
+  userId           String?
+  user             User?       @relation(fields: [userId], references: [id])
+  vehicleId        String
+  vehicle          Vehicle     @relation(fields: [vehicleId], references: [id])
+  startDate        DateTime
+  endDate          DateTime
+  durationDays     Int
+  driverDetails    Json
+  pricingBreakdown Json
+  totalPence       Int
+  currency         String      @default("gbp")
+  status           QuoteStatus @default(DRAFT)
+  expiresAt        DateTime
+  createdAt        DateTime    @default(now())
+  policy           Policy?
+
+  @@index([userId])
+}
+
+enum PolicyStatus {
+  PENDING
+  ISSUED
+  CANCELLED
+}
+
+model Policy {
+  id           String       @id @default(cuid())
+  policyNumber String       @unique
+  quoteId      String       @unique
+  quote        Quote        @relation(fields: [quoteId], references: [id])
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  status       PolicyStatus @default(PENDING)
+  startDate    DateTime
+  endDate      DateTime
+  issuedAt     DateTime?
+  paymentId    String?      @unique
+  payment      Payment?     @relation(fields: [paymentId], references: [id])
+  documents    Document[]
+  createdAt    DateTime     @default(now())
+
+  @@index([userId])
+}
+
+enum PaymentStatus {
+  REQUIRES_PAYMENT
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  stripePaymentIntentId String        @unique
+  amountPence           Int
+  currency              String
+  status                PaymentStatus @default(REQUIRES_PAYMENT)
+  rawStripeEventJson    Json?
+  policy                Policy?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+}
+
+enum DocumentType {
+  CERTIFICATE
+  POLICY_SCHEDULE
+  IPID
+  POLICY_WORDING
+  TERMS_OF_BUSINESS
+}
+
+model Document {
+  id          String       @id @default(cuid())
+  policyId    String
+  policy      Policy       @relation(fields: [policyId], references: [id])
+  type        DocumentType
+  storageKey  String
+  mimeType    String       @default("application/pdf")
+  watermarked Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+
+  @@index([policyId])
+}
+
+model EventLog {
+  id         String   @id @default(cuid())
+  entityType String // "Policy" | "Payment" | "Quote" | "User"
+  entityId   String
+  eventType  String // e.g. "stripe.webhook.received", "policy.issued", "email.sent"
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+}
