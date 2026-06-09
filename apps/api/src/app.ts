@@ -23,7 +23,7 @@ export function createApp() {
   app.use(pinoHttp({ autoLogging: { ignore: (req) => req.url === "/health" } }));
   app.use(
     cors({
-      origin: env.appBaseUrl,
+      origin: true,
       credentials: true,
     })
   );
