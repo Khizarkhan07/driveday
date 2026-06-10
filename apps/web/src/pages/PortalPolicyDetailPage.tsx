@@ -19,7 +19,8 @@ async function downloadDocument(docId: string, filename: string) {
   a.click();
   URL.revokeObjectURL(url);
 }
-import { Badge, Card } from "../components/ui";
+import { useState } from "react";
+import { Badge, Button, Card } from "../components/ui";
 
 interface PolicyDetailResponse {
   policy: {
@@ -58,6 +59,19 @@ function money(pence: number): string {
 export function PortalPolicyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: userData, isLoading: userLoading } = useCurrentUser();
+  const [resending, setResending] = useState(false);
+  const [resendDone, setResendDone] = useState(false);
+
+  async function handleResendEmail() {
+    setResending(true);
+    setResendDone(false);
+    try {
+      await api.post(`/portal/policies/${id}/resend-email`, {});
+      setResendDone(true);
+    } finally {
+      setResending(false);
+    }
+  }
 
   const detail = useQuery<PolicyDetailResponse>({
     queryKey: ["portal", "policy", id],
@@ -144,7 +158,16 @@ export function PortalPolicyDetailPage() {
 
           {/* Documents */}
           <Card>
-            <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider mb-4">Policy documents</p>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Policy documents</p>
+              <Button
+                variant="secondary"
+                onClick={handleResendEmail}
+                disabled={resending}
+              >
+                {resending ? "Sending…" : resendDone ? "Sent!" : "Email documents"}
+              </Button>
+            </div>
             {policy.documents.length === 0 ? (
               <div className="flex items-center gap-3 py-2">
                 <svg className="animate-spin w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24">

@@ -2,6 +2,9 @@ import { Router } from "express";
 import { prisma, logEvent } from "../../db/client";
 import { requireAuth } from "../../middleware/require-auth";
 import { getDocumentStorage } from "../../providers/storage/factory";
+import { getEmailProvider } from "../../providers/email/factory";
+import { renderPolicyConfirmationEmail } from "../email/templates";
+import { env } from "../../config/env";
 
 export const portalRouter = Router();
 
@@ -88,4 +91,47 @@ portalRouter.get("/documents/:id/download", async (req, res) => {
     `inline; filename="${DOWNLOAD_FILENAMES[document.type]}"`
   );
   return res.send(buffer);
+});
+
+portalRouter.post("/policies/:id/resend-email", async (req, res) => {
+  const policy = await prisma.policy.findUnique({
+    where: { id: req.params.id },
+    include: {
+      user: true,
+      documents: true,
+      quote: { include: { vehicle: true } },
+    },
+  });
+
+  if (!policy || policy.userId !== req.user!.id) {
+    return res.status(404).json({ error: "Policy not found" });
+  }
+
+  const storage = getDocumentStorage();
+  const attachments = await Promise.all(
+    policy.documents.map(async (doc) => ({
+      filename: DOWNLOAD_FILENAMES[doc.type],
+      content: await storage.read(doc.storageKey),
+      contentType: doc.mimeType,
+    }))
+  );
+
+  await getEmailProvider().send({
+    to: policy.user.email,
+    subject: `Your Day Drive policy documents — ${policy.policyNumber}`,
+    html: renderPolicyConfirmationEmail({
+      firstName: policy.user.firstName,
+      policyNumber: policy.policyNumber,
+      registration: policy.quote.vehicle.registration,
+      vehicleMakeModel: [policy.quote.vehicle.make, policy.quote.vehicle.model].filter(Boolean).join(" "),
+      startDate: policy.quote.startDate.toISOString(),
+      endDate: policy.quote.endDate.toISOString(),
+      totalPence: policy.quote.totalPence,
+      portalUrl: `${env.appBaseUrl}/portal/policies/${policy.id}`,
+    }),
+    attachments,
+  });
+
+  await logEvent("Policy", policy.id, "email.resent", { to: policy.user.email });
+  return res.json({ ok: true });
 });
