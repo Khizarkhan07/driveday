@@ -38,12 +38,12 @@ describe("generated PDF watermark", () => {
   it("Certificate contains the DEMO disclaimer", async () => {
     const text = await textOf(
       React.createElement(CertificateDocument, {
-        policyNumber: "DEMO-2026-000001",
+        policyNumber: "DEMO-2023-000001",
         policyholderName: "Test Person",
         vehicleRegistration: "AB12CDE",
         vehicleDescription: "Ford Fiesta",
-        startDate: "1 Jan 2026, 09:00",
-        endDate: "2 Jan 2026, 09:00",
+        startDate: "1 Jan 2023, 09:00",
+        endDate: "2 Jan 2023, 09:00",
       })
     );
     expect(text).toContain(DEMO_DISCLAIMER);
@@ -52,15 +52,15 @@ describe("generated PDF watermark", () => {
   it("Policy schedule contains the DEMO disclaimer", async () => {
     const text = await textOf(
       React.createElement(PolicyScheduleDocument, {
-        policyNumber: "DEMO-2026-000001",
+        policyNumber: "DEMO-2023-000001",
         policyholderName: "Test Person",
         insuredAddress: "1 Test Street\nTest City\nTE1 1ST",
         vehicleRegistration: "AB12CDE",
         vehicleDescription: "Ford Fiesta",
-        startDate: "1 Jan 2026, 09:00",
-        endDate: "2 Jan 2026, 09:00",
+        startDate: "1 Jan 2023, 09:00",
+        endDate: "2 Jan 2023, 09:00",
         premium: "£42.00",
-        dateOfIssue: "1 Jan 2026, 09:00",
+        dateOfIssue: "1 Jan 2023, 09:00",
       })
     );
     expect(text).toContain(DEMO_DISCLAIMER);
@@ -69,7 +69,7 @@ describe("generated PDF watermark", () => {
   it("IPID contains the DEMO disclaimer", async () => {
     const text = await textOf(
       React.createElement(IpidDocument, {
-        policyNumber: "DEMO-2026-000001",
+        policyNumber: "DEMO-2023-000001",
         policyholderName: "Test Person",
         userEmail: "test@example.com",
         addressLine1: "1 Test Street",
@@ -80,7 +80,7 @@ describe("generated PDF watermark", () => {
         vehicleRegistration: "AB12CDE",
         vehicleMake: "Ford",
         vehicleModel: "Fiesta",
-        startDate: "01/01/2026",
+        startDate: "01/01/2023",
         startTime: "09:00",
         durationDays: 1,
       })

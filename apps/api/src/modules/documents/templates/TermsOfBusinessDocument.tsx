@@ -316,7 +316,7 @@ export function TermsOfBusinessDocument() {
         Authorised and regulated by the Financial Conduct Authority (FCA reference 751221).
         www.daydrive.co.uk
       </Text>
-      <Text style={s.updated}>Last updated: 19 May 2026</Text>
+      <Text style={s.updated}>Last updated: 19 May 2023</Text>
     </DemoDocumentLayout>
   );
 }

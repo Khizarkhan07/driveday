@@ -5,12 +5,12 @@ import { getEmailProvider } from "../../providers/email/factory";
 import { renderPolicyConfirmationEmail } from "../email/templates";
 
 /**
- * Generates a demo-formatted policy reference, e.g. DEMO-2026-000123.
+ * Generates a demo-formatted policy reference, e.g. DEMO-2023-000123.
  * Deliberately prefixed "DEMO" so it can never be mistaken for a real
  * policy number, and visibly distinct from any real insurer's numbering.
  */
 async function generatePolicyNumber(): Promise<string> {
-  const year = new Date().getFullYear();
+  const year = 2023;
   const count = await prisma.policy.count();
   const sequence = String(count + 1).padStart(6, "0");
   return `Policy-${year}-${sequence}`;
