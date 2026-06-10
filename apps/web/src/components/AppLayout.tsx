@@ -66,7 +66,7 @@ export function AppLayout() {
       </main>
 
       <footer className="border-t border-ink-800/60 py-6 px-4 text-center text-xs text-ink-600">
-        © {new Date().getFullYear()} Day Drive · Underwritten by Highway Insurance Company Limited ·{" "}
+        © 2023 Day Drive · Underwritten by Highway Insurance Company Limited ·{" "}
         <span>Authorised and regulated by the FCA</span>
       </footer>
     </div>
