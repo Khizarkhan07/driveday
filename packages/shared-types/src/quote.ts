@@ -16,7 +16,12 @@ export const driverDetailsSchema = z.object({
   addressLine2: z.string().optional(),
   city: z.string().min(1),
   postcode: z.string().min(2),
-  licenceNumber: z.string().min(5),
+  licenceNumber: z
+    .string()
+    .regex(
+      /^[A-Z9]{5}\d{6}[A-Z9]{2}\d[A-Z]{2}$/i,
+      "Enter a valid UK driving licence number (e.g. MORGA753116SM9IJ)"
+    ),
   yearsHeldLicence: z.number().int().min(0).max(80),
   hasConvictions: z.boolean(),
   hasClaims: z.boolean(),
