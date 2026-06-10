@@ -75,8 +75,8 @@ export function PortalPage() {
                     <p className="font-semibold text-white">{p.policyNumber}</p>
                     <p className="text-sm text-ink-400">
                       {p.vehicleRegistration} ·{" "}
-                      {new Date(p.startDate).toLocaleDateString("en-GB")} –{" "}
-                      {new Date(p.endDate).toLocaleDateString("en-GB")}
+                      {new Date(p.startDate).toLocaleDateString("en-GB", { timeZone: "Europe/London" })} –{" "}
+                      {new Date(p.endDate).toLocaleDateString("en-GB", { timeZone: "Europe/London" })}
                     </p>
                   </div>
                 </div>

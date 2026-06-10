@@ -22,16 +22,18 @@ function renderDocument(element: React.ReactElement): Promise<Buffer> {
   return renderToBuffer(element as PdfDocumentElement);
 }
 
+const TZ = "Europe/London";
+
 function formatDate(date: Date): string {
-  return date.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+  return date.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: TZ });
 }
 
 function formatShortDate(date: Date): string {
-  return date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: TZ });
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ });
 }
 
 function formatDOB(isoDate: string): string {

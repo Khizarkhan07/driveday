@@ -118,13 +118,13 @@ export function PortalPolicyDetailPage() {
               <div>
                 <dt className="text-xs text-ink-500 mb-1">Cover starts</dt>
                 <dd className="text-white font-medium">
-                  {new Date(policy.startDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
+                  {new Date(policy.startDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs text-ink-500 mb-1">Cover ends</dt>
                 <dd className="text-white font-medium">
-                  {new Date(policy.endDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
+                  {new Date(policy.endDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                 </dd>
               </div>
               <div>
@@ -135,7 +135,7 @@ export function PortalPolicyDetailPage() {
                 <dt className="text-xs text-ink-500 mb-1">Issued</dt>
                 <dd className="text-white font-medium">
                   {policy.issuedAt
-                    ? new Date(policy.issuedAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })
+                    ? new Date(policy.issuedAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })
                     : "Pending"}
                 </dd>
               </div>

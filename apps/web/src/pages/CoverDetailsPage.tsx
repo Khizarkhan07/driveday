@@ -81,13 +81,13 @@ export function CoverDetailsPage() {
                 <div>
                   <p className="text-ink-500 text-xs">Starts</p>
                   <p className="text-white font-medium">
-                    {new Date(start).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
+                    {new Date(start).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                   </p>
                 </div>
                 <div>
                   <p className="text-ink-500 text-xs">Ends (24 hrs)</p>
                   <p className="text-white font-medium">
-                    {previewEnd.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
+                    {previewEnd.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                   </p>
                 </div>
               </div>
