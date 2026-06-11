@@ -1,7 +1,23 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { api, apiBaseUrl } from "../../lib/api";
+import { api, apiBaseUrl, sessionToken } from "../../lib/api";
 import { Badge, Card } from "../../components/ui";
+
+async function downloadDocument(docId: string, filename: string) {
+  const token = sessionToken.get();
+  const res = await fetch(`${apiBaseUrl}/portal/documents/${docId}/download`, {
+    credentials: "include",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error("Download failed");
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 interface PolicyDetail {
   id: string;
@@ -117,18 +133,16 @@ export function AdminPolicyDetailPage() {
         ) : (
           <div className="flex flex-wrap gap-2">
             {policy.documents.map((doc) => (
-              <a
+              <button
                 key={doc.id}
-                href={`${apiBaseUrl}/portal/documents/${doc.id}/download`}
-                target="_blank"
-                rel="noreferrer"
+                onClick={() => downloadDocument(doc.id, `${doc.type.toLowerCase()}.pdf`)}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-white border border-ink/15 px-3 py-2 text-sm text-ink hover:bg-mint/5 hover:border-mint/40 transition"
               >
                 <svg className="w-4 h-4 text-ink/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
                 {DOC_LABELS[doc.type] ?? doc.type}
-              </a>
+              </button>
             ))}
           </div>
         )}
