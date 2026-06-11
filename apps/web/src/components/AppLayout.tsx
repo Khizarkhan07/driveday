@@ -10,9 +10,8 @@ export function AppLayout() {
     <div className="min-h-screen flex flex-col bg-paper">
       <header className="bg-white/80 backdrop-blur border-b border-ink/8 sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <Link to="/" className="font-display text-xl font-bold tracking-tight flex items-center gap-2 text-ink">
-            <span className="inline-flex w-7 h-7 rounded-lg bg-mint items-center justify-center text-ink text-sm">⚡</span>
-            DayDrive
+          <Link to="/">
+            <img src="/daydrive-logo.svg" alt="DayDrive" className="h-10 w-auto" />
           </Link>
           <nav className="flex items-center gap-2 text-sm">
             {user ? (

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
   <defs>
-    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="blueGradW" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38BDF8"/>
       <stop offset="100%" stop-color="#0047FF"/>
     </linearGradient>
@@ -13,7 +13,7 @@
              C90 250 260 250 260 125
              C260 0 90 0 90 0 Z"
           fill="none"
-          stroke="#1d1e2c"
+          stroke="white"
           stroke-width="32"
           stroke-linejoin="round"/>
 
@@ -21,7 +21,7 @@
              C330 0 430 90 430 125
              C430 160 330 250 170 250"
           fill="none"
-          stroke="url(#blueGrad)"
+          stroke="url(#blueGradW)"
           stroke-width="32"
           stroke-linecap="round"/>
 
@@ -29,14 +29,14 @@
     <path d="M105 220
              C180 170 250 120 360 70"
           fill="none"
-          stroke="#1d1e2c"
+          stroke="white"
           stroke-width="22"
           stroke-linecap="round"/>
 
     <path d="M150 200
              C215 155 270 120 340 85"
           fill="none"
-          stroke="#f7f8f6"
+          stroke="#181926"
           stroke-width="8"
           stroke-dasharray="16 14"
           stroke-linecap="round"/>
@@ -47,19 +47,19 @@
         font-family="Helvetica, Arial, sans-serif"
         font-size="110"
         font-weight="800"
-        fill="#1d1e2c"
+        fill="white"
         letter-spacing="2">DAY</text>
 
   <text x="755" y="200"
         font-family="Helvetica, Arial, sans-serif"
         font-size="110"
         font-weight="800"
-        fill="url(#blueGrad)"
+        fill="url(#blueGradW)"
         letter-spacing="2">DRIVE</text>
 
   <text x="535" y="255"
         font-family="Helvetica, Arial, sans-serif"
         font-size="32"
-        fill="#9598ab"
+        fill="#94a3b8"
         letter-spacing="10">AUTO INSURANCE</text>
 </svg>

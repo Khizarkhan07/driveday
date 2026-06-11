@@ -45,9 +45,8 @@ export function LandingPage() {
       {/* ── NAV ── */}
       <header className="sticky top-0 z-50 bg-paper/85 backdrop-blur border-b border-ink/10">
         <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between">
-          <Link to="/" className="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
-            <span className="inline-flex w-7 h-7 rounded-lg bg-mint items-center justify-center text-ink text-sm">⚡</span>
-            DayDrive
+          <Link to="/">
+            <img src="/daydrive-logo.svg" alt="DayDrive" className="h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-ink/70">
             <a href="#how" className="hover:text-ink transition">How it works</a>
@@ -348,9 +347,7 @@ export function LandingPage() {
       {/* ── FOOTER ── */}
       <footer className="bg-ink-800 text-paper/55 py-12 text-sm">
         <div className="mx-auto max-w-6xl px-5">
-          <div className="font-display text-xl font-bold text-paper flex items-center gap-2">
-            <span className="inline-flex w-6 h-6 rounded bg-mint items-center justify-center text-ink text-xs">⚡</span> DayDrive
-          </div>
+          <img src="/daydrive-logo-white.svg" alt="DayDrive" className="h-9 w-auto" />
           <div className="mt-5 space-y-2 max-w-3xl">
             <p>DayDrive.co.uk is a trading style of <span className="text-paper/80">[legal entity name]</span>, registered in England and Wales, company number <span className="text-paper/80">[number]</span>.</p>
             <p>DayDrive.co.uk is an introducer to <span className="text-paper/80">[authorised firm]</span>, which is authorised and regulated by the Financial Conduct Authority, FRN <span className="text-paper/80">[number]</span>. We do not provide advice or arrange insurance ourselves.</p>

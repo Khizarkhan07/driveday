@@ -13,9 +13,8 @@ export function AdminLayout() {
       {/* Sidebar */}
       <aside className="w-56 shrink-0 border-r border-ink/8 flex flex-col bg-white">
         <div className="px-5 py-4 border-b border-ink/8">
-          <Link to="/" className="font-display text-lg font-bold tracking-tight flex items-center gap-2 text-ink">
-            <span className="inline-flex w-6 h-6 rounded bg-mint items-center justify-center text-ink text-xs">⚡</span>
-            DayDrive
+          <Link to="/">
+            <img src="/daydrive-logo.svg" alt="DayDrive" className="h-8 w-auto" />
           </Link>
           <p className="text-xs text-amber-600 mt-1 font-semibold uppercase tracking-wider">Admin</p>
         </div>

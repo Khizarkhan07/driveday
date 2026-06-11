@@ -20,10 +20,7 @@ export function LoginPage() {
     <div className="min-h-[calc(100vh-73px)] flex items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
-          <div className="font-display text-3xl font-bold tracking-tight flex items-center justify-center gap-2 text-ink">
-            <span className="inline-flex w-9 h-9 rounded-xl bg-mint items-center justify-center text-ink">⚡</span>
-            DayDrive
-          </div>
+          <img src="/daydrive-logo.svg" alt="DayDrive" className="h-10 w-auto mx-auto" />
           <h1 className="text-2xl font-display font-bold text-ink mt-4">Welcome back</h1>
           <p className="text-ink/55 text-sm">Log in to view your policies and documents</p>
         </div>
