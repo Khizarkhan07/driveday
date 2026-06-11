@@ -353,10 +353,10 @@ export function LandingPage() {
             <p>Registered in England and Wales under Company Registration Number 04596433. Registered office — 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.</p>
           </div>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-paper/70 font-medium">
-            <a href="#" className="hover:text-mint transition">Privacy Policy</a>
-            <a href="#" className="hover:text-mint transition">Terms of Use</a>
-            <a href="#" className="hover:text-mint transition">Complaints</a>
-            <a href="#" className="hover:text-mint transition">Cookie Policy</a>
+            <a href="/privacy.html" className="hover:text-mint transition">Privacy Policy</a>
+            <a href="/terms.html" className="hover:text-mint transition">Terms of Use</a>
+            <a href="/complaints.html" className="hover:text-mint transition">Complaints</a>
+            <a href="/cookies.html" className="hover:text-mint transition">Cookie Policy</a>
           </div>
         </div>
       </footer>
