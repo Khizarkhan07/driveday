@@ -49,18 +49,18 @@ export function ConfirmationPage() {
   return (
     <div className="space-y-6">
       <Card className="relative overflow-hidden">
-        <div className="absolute -top-12 -right-12 w-40 h-40 bg-brand-400/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -top-12 -right-12 w-40 h-40 bg-mint/10 rounded-full blur-2xl pointer-events-none" />
         <div className="relative">
           {isIssued && policy ? (
             <div className="space-y-5 text-center">
-              <div className="w-16 h-16 rounded-full bg-brand-400/15 border border-brand-400/30 flex items-center justify-center text-3xl mx-auto">
+              <div className="w-16 h-16 rounded-full bg-mint/15 border border-mint/25 flex items-center justify-center text-3xl mx-auto text-mint-700">
                 ✓
               </div>
               <div>
-                <h1 className="text-2xl font-extrabold text-white">You're covered!</h1>
-                <p className="text-ink-400 mt-1 text-sm">Policy reference <span className="text-white font-semibold">{policy.policyNumber}</span></p>
+                <h1 className="text-2xl font-display font-bold text-ink">You're covered!</h1>
+                <p className="text-ink/55 mt-1 text-sm">Policy reference <span className="text-ink font-semibold">{policy.policyNumber}</span></p>
               </div>
-              <p className="text-sm text-ink-300">
+              <p className="text-sm text-ink/65">
                 Your certificate, policy schedule and wording have been generated and emailed to you.
               </p>
               <Link to="/portal">
@@ -69,20 +69,20 @@ export function ConfirmationPage() {
             </div>
           ) : stillWaiting ? (
             <div className="space-y-4 text-center">
-              <div className="w-16 h-16 rounded-full bg-ink-800 border border-ink-700 flex items-center justify-center mx-auto">
-                <svg className="animate-spin w-7 h-7 text-brand-400" fill="none" viewBox="0 0 24 24">
+              <div className="w-16 h-16 rounded-full bg-ink/5 border border-ink/10 flex items-center justify-center mx-auto">
+                <svg className="animate-spin w-7 h-7 text-mint" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
               </div>
-              <h1 className="text-xl font-extrabold text-white">Confirming your payment…</h1>
-              <p className="text-sm text-ink-400">
+              <h1 className="text-xl font-display font-bold text-ink">Confirming your payment…</h1>
+              <p className="text-sm text-ink/55">
                 Verifying your payment server-side. This usually takes a few seconds.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              <h1 className="text-xl font-extrabold text-white">Payment confirmation pending</h1>
+              <h1 className="text-xl font-display font-bold text-ink">Payment confirmation pending</h1>
               <Banner tone="warning">
                 We couldn't confirm your payment yet.{" "}
                 <Link to="/portal" className="underline font-semibold">Check your portal</Link>{" "}

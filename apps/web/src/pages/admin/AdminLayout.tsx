@@ -9,14 +9,15 @@ export function AdminLayout() {
   if (!user || user.role !== "ADMIN") return <Navigate to="/login" replace />;
 
   return (
-    <div className="min-h-screen flex bg-ink-950">
+    <div className="min-h-screen flex bg-paper">
       {/* Sidebar */}
-      <aside className="w-56 shrink-0 border-r border-ink-800/60 flex flex-col">
-        <div className="px-5 py-4 border-b border-ink-800/60">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/daydrive-logo.svg" alt="Day Drive" className="h-8 w-auto" />
+      <aside className="w-56 shrink-0 border-r border-ink/8 flex flex-col bg-white">
+        <div className="px-5 py-4 border-b border-ink/8">
+          <Link to="/" className="font-display text-lg font-bold tracking-tight flex items-center gap-2 text-ink">
+            <span className="inline-flex w-6 h-6 rounded bg-mint items-center justify-center text-ink text-xs">⚡</span>
+            DayDrive
           </Link>
-          <p className="text-xs text-ink-500 mt-1 font-medium uppercase tracking-wider">Admin</p>
+          <p className="text-xs text-amber-600 mt-1 font-semibold uppercase tracking-wider">Admin</p>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-0.5 text-sm">
           {[
@@ -32,8 +33,8 @@ export function AdminLayout() {
               className={({ isActive }) =>
                 `block px-3 py-2 rounded-lg font-medium transition ${
                   isActive
-                    ? "bg-brand-400/15 text-brand-400"
-                    : "text-ink-400 hover:text-white hover:bg-ink-800"
+                    ? "bg-mint/15 text-mint-700"
+                    : "text-ink/60 hover:text-ink hover:bg-ink/5"
                 }`
               }
             >
@@ -41,7 +42,7 @@ export function AdminLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="px-5 py-4 border-t border-ink-800/60 text-xs text-ink-500 truncate">{user.email}</div>
+        <div className="px-5 py-4 border-t border-ink/8 text-xs text-ink/40 truncate">{user.email}</div>
       </aside>
 
       {/* Main content */}

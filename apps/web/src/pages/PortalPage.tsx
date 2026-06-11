@@ -29,8 +29,8 @@ export function PortalPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold text-white">My policies</h1>
-          <p className="text-sm text-ink-400 mt-0.5">Your active and past Day Drive policies</p>
+          <h1 className="text-2xl font-display font-bold text-ink">My policies</h1>
+          <p className="text-sm text-ink/55 mt-0.5">Your active and past DayDrive policies</p>
         </div>
         <Link to="/">
           <Button variant="secondary">+ New quote</Button>
@@ -39,8 +39,8 @@ export function PortalPage() {
 
       {policies.isLoading && (
         <Card>
-          <div className="flex items-center gap-3 text-ink-400">
-            <svg className="animate-spin w-5 h-5 text-brand-400" fill="none" viewBox="0 0 24 24">
+          <div className="flex items-center gap-3 text-ink/55">
+            <svg className="animate-spin w-5 h-5 text-mint" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
@@ -53,8 +53,8 @@ export function PortalPage() {
         <Card className="text-center py-12 space-y-4">
           <div className="text-4xl">🚗</div>
           <div>
-            <p className="text-white font-semibold">No policies yet</p>
-            <p className="text-sm text-ink-400 mt-1">Get your first quote in under 2 minutes</p>
+            <p className="text-ink font-semibold">No policies yet</p>
+            <p className="text-sm text-ink/55 mt-1">Get your first quote in under 2 minutes</p>
           </div>
           <Link to="/">
             <Button>Get a quote →</Button>
@@ -65,15 +65,15 @@ export function PortalPage() {
       <div className="space-y-3">
         {policies.data?.policies.map((p) => (
           <Link key={p.id} to={`/portal/policies/${p.id}`}>
-            <Card className="hover:border-brand-400/50 hover:bg-ink-800/80 transition-all duration-150 cursor-pointer group">
+            <Card className="hover:border-mint/40 hover:shadow-md transition-all duration-150 cursor-pointer group p-4 sm:p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-ink-800 border border-ink-700 flex items-center justify-center text-lg group-hover:border-brand-400/30 transition">
+                  <div className="w-10 h-10 rounded-xl bg-mint/10 border border-mint/20 flex items-center justify-center text-lg group-hover:border-mint/40 transition">
                     🚗
                   </div>
                   <div>
-                    <p className="font-semibold text-white">{p.policyNumber}</p>
-                    <p className="text-sm text-ink-400">
+                    <p className="font-semibold text-ink">{p.policyNumber}</p>
+                    <p className="text-sm text-ink/55">
                       {p.vehicleRegistration} ·{" "}
                       {new Date(p.startDate).toLocaleDateString("en-GB", { timeZone: "Europe/London" })} –{" "}
                       {new Date(p.endDate).toLocaleDateString("en-GB", { timeZone: "Europe/London" })}
@@ -81,7 +81,7 @@ export function PortalPage() {
                   </div>
                 </div>
                 <div className="text-right space-y-1">
-                  <p className="font-bold text-white">{money(p.totalPence)}</p>
+                  <p className="font-bold text-ink">{money(p.totalPence)}</p>
                   <Badge tone={statusTone(p.status)}>{p.status}</Badge>
                 </div>
               </div>

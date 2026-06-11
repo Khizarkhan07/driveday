@@ -23,37 +23,37 @@ export function AdminDashboardPage() {
     queryFn: () => api.get("/admin/stats"),
   });
 
-  if (isLoading) return <p className="text-ink-400 text-sm">Loading…</p>;
+  if (isLoading) return <p className="text-ink/55 text-sm">Loading…</p>;
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-extrabold text-white">Dashboard</h1>
+      <h1 className="text-2xl font-display font-bold text-ink">Dashboard</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
-          <p className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-1">Total users</p>
-          <p className="text-3xl font-extrabold text-white">{data?.totalUsers ?? 0}</p>
+          <p className="text-xs text-ink/45 uppercase tracking-wider font-semibold mb-1">Total users</p>
+          <p className="text-3xl font-display font-bold text-ink">{data?.totalUsers ?? 0}</p>
         </Card>
         <Card>
-          <p className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-1">Total policies</p>
-          <p className="text-3xl font-extrabold text-white">{data?.totalPolicies ?? 0}</p>
+          <p className="text-xs text-ink/45 uppercase tracking-wider font-semibold mb-1">Total policies</p>
+          <p className="text-3xl font-display font-bold text-ink">{data?.totalPolicies ?? 0}</p>
         </Card>
         <Card>
-          <p className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-1">Total revenue</p>
-          <p className="text-3xl font-extrabold text-brand-400">{money(data?.totalRevenuePence ?? 0)}</p>
+          <p className="text-xs text-ink/45 uppercase tracking-wider font-semibold mb-1">Total revenue</p>
+          <p className="text-3xl font-display font-bold text-mint-700">{money(data?.totalRevenuePence ?? 0)}</p>
         </Card>
       </div>
 
       <Card>
-        <h2 className="text-base font-bold text-white mb-4">Recent activity</h2>
-        <div className="space-y-2">
+        <h2 className="text-base font-semibold text-ink mb-4">Recent activity</h2>
+        <div className="space-y-0">
           {data?.recentEvents.map((e) => (
-            <div key={e.id} className="flex items-center justify-between text-sm py-2 border-b border-ink-800/60 last:border-0">
+            <div key={e.id} className="flex items-center justify-between text-sm py-2.5 border-b border-ink/6 last:border-0">
               <div>
-                <span className="text-white font-medium">{e.eventType}</span>
-                <span className="text-ink-500 ml-2">{e.entityType} · {e.entityId.slice(0, 12)}…</span>
+                <span className="text-ink font-medium">{e.eventType}</span>
+                <span className="text-ink/45 ml-2">{e.entityType} · {e.entityId.slice(0, 12)}…</span>
               </div>
-              <span className="text-ink-500 text-xs shrink-0 ml-4">{fmtDate(e.createdAt)}</span>
+              <span className="text-ink/40 text-xs shrink-0 ml-4">{fmtDate(e.createdAt)}</span>
             </div>
           ))}
         </div>

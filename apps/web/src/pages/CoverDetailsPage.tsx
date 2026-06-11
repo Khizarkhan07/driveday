@@ -59,9 +59,9 @@ export function CoverDetailsPage() {
       <Stepper step={2} total={5} />
 
       <div>
-        <h1 className="text-2xl font-extrabold text-white">When do you need cover?</h1>
-        <p className="text-sm text-ink-400 mt-1">
-          1-day policy for <span className="text-white font-semibold">{vehicle.registration}</span>
+        <h1 className="text-2xl font-display font-bold text-ink">When do you need cover?</h1>
+        <p className="text-sm text-ink/55 mt-1">
+          1-day policy for <span className="text-ink font-semibold">{vehicle.registration}</span>
         </p>
       </div>
 
@@ -75,25 +75,25 @@ export function CoverDetailsPage() {
           />
 
           {previewEnd && (
-            <div className="rounded-xl bg-ink-800/60 border border-ink-700/50 p-4 space-y-2">
-              <p className="text-xs font-semibold text-ink-400 uppercase tracking-wider">Cover summary</p>
+            <div className="rounded-xl bg-ink/[.04] border border-ink/8 p-4 space-y-2">
+              <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider">Cover summary</p>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <p className="text-ink-500 text-xs">Starts</p>
-                  <p className="text-white font-medium">
+                  <p className="text-ink/45 text-xs">Starts</p>
+                  <p className="text-ink font-medium">
                     {new Date(start).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                   </p>
                 </div>
                 <div>
-                  <p className="text-ink-500 text-xs">Ends (24 hrs)</p>
-                  <p className="text-white font-medium">
+                  <p className="text-ink/45 text-xs">Ends (24 hrs)</p>
+                  <p className="text-ink font-medium">
                     {previewEnd.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 pt-1">
-                <span className="w-2 h-2 rounded-full bg-brand-400" />
-                <p className="text-xs text-brand-400 font-semibold">1 day · 24 hours continuous cover</p>
+                <span className="w-2 h-2 rounded-full bg-mint" />
+                <p className="text-xs text-mint-700 font-semibold">1 day · 24 hours continuous cover</p>
               </div>
             </div>
           )}

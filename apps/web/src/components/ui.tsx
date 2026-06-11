@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`bg-ink-900 border border-ink-700/60 rounded-2xl shadow-xl shadow-black/30 p-6 sm:p-8 ${className}`}>
+    <div className={`bg-white border border-ink/8 rounded-2xl shadow-sm p-6 sm:p-8 ${className}`}>
       {children}
     </div>
   );
@@ -18,10 +18,10 @@ export function Button({
     "inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed";
   const styles =
     variant === "primary"
-      ? "bg-brand-400 text-ink-950 hover:bg-brand-300 active:scale-95 shadow-lg shadow-brand-400/20"
+      ? "bg-mint text-ink hover:bg-mint-600 active:scale-95 shadow-lg shadow-mint/25"
       : variant === "ghost"
-      ? "text-ink-300 hover:text-white hover:bg-ink-800"
-      : "bg-ink-800 border border-ink-700 text-white hover:bg-ink-700 active:scale-95";
+      ? "text-ink/60 hover:text-ink hover:bg-ink/5"
+      : "bg-white border border-ink/15 text-ink hover:bg-ink/5 active:scale-95 shadow-sm";
   return <button className={`${base} ${styles} ${className}`} {...props} />;
 }
 
@@ -31,15 +31,15 @@ export const Field = forwardRef<
 >(function Field({ label, error, ...props }, ref) {
   return (
     <label className="block">
-      <span className="block text-xs font-semibold text-ink-400 uppercase tracking-wider mb-1.5">
+      <span className="block text-xs font-semibold text-ink/50 uppercase tracking-wider mb-1.5">
         {label}
       </span>
       <input
         ref={ref}
-        className="w-full rounded-xl bg-ink-800 border border-ink-700 px-4 py-3 text-sm text-white placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition"
+        className="w-full rounded-xl bg-white border border-ink/15 px-4 py-3 text-sm text-ink placeholder:text-ink/35 focus:outline-none focus:ring-2 focus:ring-mint focus:border-mint transition"
         {...props}
       />
-      {error ? <span className="block text-xs text-red-400 mt-1.5">{error}</span> : null}
+      {error ? <span className="block text-xs text-red-500 mt-1.5">{error}</span> : null}
     </label>
   );
 });
@@ -53,12 +53,12 @@ export function Banner({
 }) {
   const styles =
     tone === "danger"
-      ? "bg-red-500/10 border-red-500/30 text-red-300"
+      ? "bg-red-50 border-red-200 text-red-700"
       : tone === "warning"
-      ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
+      ? "bg-amber-50 border-amber-200 text-amber-700"
       : tone === "success"
-      ? "bg-brand-400/10 border-brand-400/30 text-brand-300"
-      : "bg-brand-400/10 border-brand-400/20 text-brand-200";
+      ? "bg-mint/10 border-mint/30 text-mint-700"
+      : "bg-mint/10 border-mint/20 text-mint-700";
   return (
     <div className={`rounded-xl border px-4 py-3 text-sm ${styles}`}>{children}</div>
   );
@@ -71,17 +71,17 @@ export function Stepper({ step, total }: { step: number; total: number }) {
         {Array.from({ length: total }).map((_, i) => (
           <div
             key={i}
-            className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
               i < step - 1
-                ? "bg-brand-400"
+                ? "bg-mint"
                 : i === step - 1
-                ? "bg-accent-500"
-                : "bg-ink-800"
+                ? "bg-mint-700"
+                : "bg-ink/10"
             }`}
           />
         ))}
       </div>
-      <p className="text-xs text-ink-500">Step {step} of {total}</p>
+      <p className="text-xs text-ink/45">Step {step} of {total}</p>
     </div>
   );
 }
@@ -95,12 +95,12 @@ export function Badge({
 }) {
   const styles =
     tone === "success"
-      ? "bg-brand-400/15 text-brand-400 border-brand-400/20"
+      ? "bg-mint/15 text-mint-700 border-mint/25"
       : tone === "warning"
-      ? "bg-amber-400/15 text-amber-400 border-amber-400/20"
+      ? "bg-amber-100 text-amber-700 border-amber-200"
       : tone === "danger"
-      ? "bg-red-400/15 text-red-400 border-red-400/20"
-      : "bg-ink-700/50 text-ink-300 border-ink-700";
+      ? "bg-red-100 text-red-600 border-red-200"
+      : "bg-ink/5 text-ink/60 border-ink/10";
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${styles}`}>
       {children}

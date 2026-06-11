@@ -20,12 +20,15 @@ export function SignupPage() {
     <div className="min-h-[calc(100vh-73px)] flex items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
-          <img src="/daydrive-logo.svg" alt="Day Drive" className="h-10 w-auto mx-auto" />
-          <h1 className="text-2xl font-extrabold text-white mt-4">Create your account</h1>
-          <p className="text-ink-400 text-sm">Save your quotes and access policy documents</p>
+          <div className="font-display text-3xl font-bold tracking-tight flex items-center justify-center gap-2 text-ink">
+            <span className="inline-flex w-9 h-9 rounded-xl bg-mint items-center justify-center text-ink">⚡</span>
+            DayDrive
+          </div>
+          <h1 className="text-2xl font-display font-bold text-ink mt-4">Create your account</h1>
+          <p className="text-ink/55 text-sm">Save your quotes and access policy documents</p>
         </div>
 
-        <div className="bg-ink-900 border border-ink-700/60 rounded-2xl shadow-xl shadow-black/30 p-8">
+        <div className="bg-white border border-ink/8 rounded-2xl shadow-sm p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <Field
@@ -71,9 +74,9 @@ export function SignupPage() {
           </form>
         </div>
 
-        <p className="text-center text-sm text-ink-500">
+        <p className="text-center text-sm text-ink/50">
           Already have an account?{" "}
-          <Link to={`/login?next=${encodeURIComponent(next)}`} className="text-brand-400 font-semibold hover:text-brand-300">
+          <Link to={`/login?next=${encodeURIComponent(next)}`} className="text-mint-700 font-semibold hover:text-mint-600">
             Log in
           </Link>
         </p>

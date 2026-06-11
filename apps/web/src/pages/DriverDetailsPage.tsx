@@ -45,13 +45,13 @@ export function DriverDetailsPage() {
       <Stepper step={3} total={5} />
 
       <div>
-        <h1 className="text-2xl font-extrabold text-white">Driver details</h1>
-        <p className="text-sm text-ink-400 mt-1">Tell us about the person driving the vehicle</p>
+        <h1 className="text-2xl font-display font-bold text-ink">Driver details</h1>
+        <p className="text-sm text-ink/55 mt-1">Tell us about the person driving the vehicle</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Card>
-          <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider mb-4">Personal information</p>
+          <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider mb-4">Personal information</p>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <Field label="First name" {...register("firstName")} error={errors.firstName?.message} />
@@ -67,7 +67,7 @@ export function DriverDetailsPage() {
         </Card>
 
         <Card>
-          <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider mb-4">Address</p>
+          <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider mb-4">Address</p>
           <div className="space-y-4">
             <Field label="Address line 1" {...register("addressLine1")} error={errors.addressLine1?.message} />
             <Field label="Address line 2 (optional)" {...register("addressLine2")} />
@@ -79,7 +79,7 @@ export function DriverDetailsPage() {
         </Card>
 
         <Card>
-          <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider mb-4">Licence details</p>
+          <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider mb-4">Licence details</p>
           <div className="space-y-4">
             <Field
               label="Driving licence number"
@@ -98,15 +98,15 @@ export function DriverDetailsPage() {
         </Card>
 
         <Card>
-          <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider mb-4">Declarations</p>
+          <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider mb-4">Declarations</p>
           <div className="space-y-4">
             <label className="flex items-start gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 {...register("hasClaims")}
-                className="mt-0.5 w-4 h-4 rounded accent-brand-400 bg-ink-800 border-ink-600"
+                className="mt-0.5 w-4 h-4 rounded accent-mint border-ink/20"
               />
-              <span className="text-sm text-ink-300 group-hover:text-white transition">
+              <span className="text-sm text-ink/65 group-hover:text-ink transition">
                 I've had a motor insurance claim in the last 5 years
               </span>
             </label>
@@ -114,9 +114,9 @@ export function DriverDetailsPage() {
               <input
                 type="checkbox"
                 {...register("hasConvictions")}
-                className="mt-0.5 w-4 h-4 rounded accent-brand-400 bg-ink-800 border-ink-600"
+                className="mt-0.5 w-4 h-4 rounded accent-mint border-ink/20"
               />
-              <span className="text-sm text-ink-300 group-hover:text-white transition">
+              <span className="text-sm text-ink/65 group-hover:text-ink transition">
                 I have unspent motoring convictions
               </span>
             </label>

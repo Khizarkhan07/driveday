@@ -87,14 +87,14 @@ export function PortalPolicyDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-white transition">
+      <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm text-ink/55 hover:text-ink transition">
         ← Back to my policies
       </Link>
 
       {detail.isLoading && (
         <Card>
-          <div className="flex items-center gap-3 text-ink-400">
-            <svg className="animate-spin w-5 h-5 text-brand-400" fill="none" viewBox="0 0 24 24">
+          <div className="flex items-center gap-3 text-ink/55">
+            <svg className="animate-spin w-5 h-5 text-mint" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
@@ -107,16 +107,16 @@ export function PortalPolicyDetailPage() {
         <div className="space-y-4">
           {/* Header card */}
           <Card className="relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-400/8 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-mint/10 rounded-full blur-2xl pointer-events-none" />
             <div className="relative flex items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-ink-800 border border-ink-700 flex items-center justify-center text-2xl">
+                <div className="w-12 h-12 rounded-xl bg-mint/10 border border-mint/20 flex items-center justify-center text-2xl">
                   🚗
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Policy number</p>
-                  <p className="text-xl font-extrabold text-white">{policy.policyNumber}</p>
-                  <p className="text-sm text-ink-400">
+                  <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider">Policy number</p>
+                  <p className="text-xl font-display font-bold text-ink">{policy.policyNumber}</p>
+                  <p className="text-sm text-ink/55">
                     {policy.vehicle.registration} · {[policy.vehicle.make, policy.vehicle.model].filter(Boolean).join(" ")}
                   </p>
                 </div>
@@ -127,27 +127,27 @@ export function PortalPolicyDetailPage() {
 
           {/* Details */}
           <Card>
-            <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider mb-4">Policy details</p>
+            <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider mb-4">Policy details</p>
             <dl className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <dt className="text-xs text-ink-500 mb-1">Cover starts</dt>
-                <dd className="text-white font-medium">
+                <dt className="text-xs text-ink/45 mb-1">Cover starts</dt>
+                <dd className="text-ink font-medium">
                   {new Date(policy.startDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-ink-500 mb-1">Cover ends</dt>
-                <dd className="text-white font-medium">
+                <dt className="text-xs text-ink/45 mb-1">Cover ends</dt>
+                <dd className="text-ink font-medium">
                   {new Date(policy.endDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-ink-500 mb-1">Premium paid</dt>
-                <dd className="text-white font-bold text-base">{money(policy.totalPence)}</dd>
+                <dt className="text-xs text-ink/45 mb-1">Premium paid</dt>
+                <dd className="text-ink font-bold text-base">{money(policy.totalPence)}</dd>
               </div>
               <div>
-                <dt className="text-xs text-ink-500 mb-1">Issued</dt>
-                <dd className="text-white font-medium">
+                <dt className="text-xs text-ink/45 mb-1">Issued</dt>
+                <dd className="text-ink font-medium">
                   {policy.issuedAt
                     ? new Date(policy.issuedAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })
                     : "Pending"}
@@ -159,7 +159,7 @@ export function PortalPolicyDetailPage() {
           {/* Documents */}
           <Card>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Policy documents</p>
+              <p className="text-xs font-semibold text-ink/45 uppercase tracking-wider">Policy documents</p>
               <Button
                 variant="secondary"
                 onClick={handleResendEmail}
@@ -170,11 +170,11 @@ export function PortalPolicyDetailPage() {
             </div>
             {policy.documents.length === 0 ? (
               <div className="flex items-center gap-3 py-2">
-                <svg className="animate-spin w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin w-4 h-4 text-mint" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                <p className="text-sm text-ink-400">Generating documents — refresh in a moment</p>
+                <p className="text-sm text-ink/55">Generating documents — refresh in a moment</p>
               </div>
             ) : (
               <ul className="space-y-2">
@@ -182,13 +182,13 @@ export function PortalPolicyDetailPage() {
                   <li key={doc.id}>
                     <button
                       onClick={() => downloadDocument(doc.id, `${doc.type.toLowerCase()}.pdf`)}
-                      className="w-full flex items-center justify-between p-3 rounded-xl bg-ink-800/60 border border-ink-700/50 hover:border-brand-400/40 hover:bg-ink-800 transition group"
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-ink/[.03] border border-ink/8 hover:border-mint/40 hover:bg-mint/5 transition group"
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-xl">{DOCUMENT_ICONS[doc.type]}</span>
-                        <span className="text-sm text-white font-medium">{DOCUMENT_LABELS[doc.type]}</span>
+                        <span className="text-sm text-ink font-medium">{DOCUMENT_LABELS[doc.type]}</span>
                       </div>
-                      <span className="text-xs font-semibold text-brand-400 group-hover:text-brand-300 transition">
+                      <span className="text-xs font-semibold text-mint-700 group-hover:text-mint-600 transition">
                         Download PDF →
                       </span>
                     </button>
