@@ -1,6 +1,7 @@
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
+import { SignatureBlock } from "./SignatureBlock";
 
 const s = StyleSheet.create({
   root: { marginTop: -22 },
@@ -259,8 +260,7 @@ export function CertificateDocument({
 
           {/* Signature / agent area */}
           <View style={s.agentRow}>
-            <View style={s.sigSpace} />
-            <Text style={s.agentName}>Day Drive</Text>
+            <SignatureBlock />
             <Text style={s.agentRole}>Authorised Broker</Text>
             <Text style={s.agentAddr}>37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA</Text>
           </View>
