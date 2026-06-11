@@ -5,7 +5,7 @@ import { Badge, Card } from "../../components/ui";
 
 async function downloadDocument(docId: string, filename: string) {
   const token = sessionToken.get();
-  const res = await fetch(`${apiBaseUrl}/portal/documents/${docId}/download`, {
+  const res = await fetch(`${apiBaseUrl}/admin/documents/${docId}/download`, {
     credentials: "include",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });

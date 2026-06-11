@@ -1,6 +1,15 @@
 import { Router } from "express";
-import { prisma } from "../../db/client";
+import { prisma, logEvent } from "../../db/client";
 import { requireAdmin } from "../../middleware/require-auth";
+import { getDocumentStorage } from "../../providers/storage/factory";
+
+const DOWNLOAD_FILENAMES = {
+  CERTIFICATE: "certificate-of-insurance.pdf",
+  POLICY_SCHEDULE: "policy-schedule.pdf",
+  IPID: "statement-of-fact.pdf",
+  POLICY_WORDING: "policy-wording.pdf",
+  TERMS_OF_BUSINESS: "terms-of-business.pdf",
+} as const;
 
 export const adminRouter = Router();
 adminRouter.use(requireAdmin);
@@ -212,4 +221,28 @@ adminRouter.get("/stats", async (_req, res) => {
     totalRevenuePence: totalRevenuePence._sum.amountPence ?? 0,
     recentEvents,
   });
+});
+
+// ─── Documents ────────────────────────────────────────────────────────────────
+
+adminRouter.get("/documents/:id/download", async (req, res) => {
+  const document = await prisma.document.findUnique({
+    where: { id: req.params.id },
+  });
+
+  if (!document) {
+    return res.status(404).json({ error: "Document not found" });
+  }
+
+  const storage = getDocumentStorage();
+  const buffer = await storage.read(document.storageKey);
+
+  await logEvent("Policy", document.policyId, "admin.document.downloaded", { documentId: document.id });
+
+  res.setHeader("Content-Type", document.mimeType);
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename="${DOWNLOAD_FILENAMES[document.type as keyof typeof DOWNLOAD_FILENAMES]}"`
+  );
+  return res.send(buffer);
 });
