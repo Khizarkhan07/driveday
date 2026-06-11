@@ -20,10 +20,10 @@ import { AdminPolicyDetailPage } from "./pages/admin/AdminPolicyDetailPage";
 import { AdminEventsPage } from "./pages/admin/AdminEventsPage";
 
 export const router = createBrowserRouter([
+  { path: "/", element: <LandingPage /> },
   {
     element: <AppLayout />,
     children: [
-      { path: "/", element: <LandingPage /> },
       { path: "/vehicle-confirm", element: <VehicleConfirmPage /> },
       { path: "/cover-details", element: <CoverDetailsPage /> },
       { path: "/driver-details", element: <DriverDetailsPage /> },

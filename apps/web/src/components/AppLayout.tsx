@@ -1,11 +1,10 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { useCurrentUser, useLogout } from "../lib/auth";
 
 export function AppLayout() {
   const { data } = useCurrentUser();
   const logout = useLogout();
   const user = data?.user;
-  const isLanding = useLocation().pathname === "/";
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-950">
@@ -60,17 +59,12 @@ export function AppLayout() {
       </header>
 
       <main className="flex-1">
-        {isLanding ? (
-          <Outlet />
-        ) : (
-          <div className="relative">
-            {/* Subtle ambient glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-400/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="relative max-w-2xl mx-auto px-4 py-10">
-              <Outlet />
-            </div>
+        <div className="relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-400/5 blur-[120px] rounded-full pointer-events-none" />
+          <div className="relative max-w-2xl mx-auto px-4 py-10">
+            <Outlet />
           </div>
-        )}
+        </div>
       </main>
 
       <footer className="border-t border-ink-800/60 py-6 px-4 text-center text-xs text-ink-600">
