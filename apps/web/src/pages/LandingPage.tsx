@@ -348,10 +348,9 @@ export function LandingPage() {
       <footer className="bg-ink-800 text-paper/55 py-12 text-sm">
         <div className="mx-auto max-w-6xl px-5">
           <img src="/daydrive-logo-white.svg" alt="DayDrive" className="h-9 w-auto" />
-          <div className="mt-5 space-y-2 max-w-3xl">
-            <p>DayDrive.co.uk is a trading style of <span className="text-paper/80">[legal entity name]</span>, registered in England and Wales, company number <span className="text-paper/80">[number]</span>.</p>
-            <p>DayDrive.co.uk is an introducer to <span className="text-paper/80">[authorised firm]</span>, which is authorised and regulated by the Financial Conduct Authority, FRN <span className="text-paper/80">[number]</span>. We do not provide advice or arrange insurance ourselves.</p>
-            <p>Authorised and regulated by the Financial Conduct Authority, FRN <span className="text-paper/80">[number]</span>.</p>
+          <div className="mt-5 space-y-2 max-w-3xl text-paper/60">
+            <p>Daydrive™ is a registered trademark © 2023 Daydrive.co.uk Limited. Authorised and regulated by the Financial Conduct Authority Firm Reference Number 407863.</p>
+            <p>Registered in England and Wales under Company Registration Number 04596433. Registered office — 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.</p>
           </div>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-paper/70 font-medium">
             <a href="#" className="hover:text-mint transition">Privacy Policy</a>
@@ -359,7 +358,6 @@ export function LandingPage() {
             <a href="#" className="hover:text-mint transition">Complaints</a>
             <a href="#" className="hover:text-mint transition">Cookie Policy</a>
           </div>
-          <p className="mt-8 text-xs text-paper/35">Underwritten by Highway Insurance Company Limited. Eligibility figures are typical market criteria — replace with your underwriter's actual terms before publishing.</p>
         </div>
       </footer>
 
