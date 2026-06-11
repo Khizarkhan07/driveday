@@ -17,6 +17,14 @@ export function AppLayout() {
           <nav className="flex items-center gap-2 text-sm">
             {user ? (
               <>
+                {user.role === "ADMIN" && (
+                  <Link
+                    to="/admin"
+                    className="text-amber-400 hover:text-amber-300 font-medium px-3 py-1.5 rounded-lg hover:bg-ink-800 transition"
+                  >
+                    Admin
+                  </Link>
+                )}
                 <Link
                   to="/portal"
                   className="text-ink-300 hover:text-white font-medium px-3 py-1.5 rounded-lg hover:bg-ink-800 transition"

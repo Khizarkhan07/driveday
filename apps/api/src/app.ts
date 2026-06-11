@@ -16,6 +16,7 @@ import { quoteRouter } from "./modules/quote/router";
 import { checkoutRouter } from "./modules/checkout/router";
 import { checkoutWebhookRouter } from "./modules/checkout/webhook";
 import { portalRouter } from "./modules/portal/router";
+import { adminRouter } from "./modules/admin/router";
 
 export function createApp() {
   const app = express();
@@ -49,6 +50,7 @@ export function createApp() {
   app.use("/quote", quoteRouter);
   app.use("/checkout", checkoutRouter);
   app.use("/portal", portalRouter);
+  app.use("/admin", adminRouter);
 
   app.use((err: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
     req.log?.error({ err }, "Unhandled error");

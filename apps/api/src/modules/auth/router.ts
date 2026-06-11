@@ -61,7 +61,7 @@ authRouter.post("/signup", async (req, res) => {
 
   return res.status(201).json({
     token,
-    user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName },
+    user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role },
   });
 });
 
@@ -83,7 +83,7 @@ authRouter.post("/login", async (req, res) => {
 
   return res.json({
     token,
-    user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName },
+    user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role },
   });
 });
 

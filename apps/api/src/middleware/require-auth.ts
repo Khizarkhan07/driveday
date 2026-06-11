@@ -6,7 +6,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      user?: { id: string; email: string; firstName: string | null; lastName: string | null };
+      user?: { id: string; email: string; firstName: string | null; lastName: string | null; role: string };
     }
   }
 }
@@ -28,6 +28,7 @@ export async function attachUser(req: Request, _res: Response, next: NextFunctio
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      role: user.role,
     };
   }
   next();
@@ -37,6 +38,17 @@ export async function attachUser(req: Request, _res: Response, next: NextFunctio
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.user) {
     return res.status(401).json({ error: "Authentication required" });
+  }
+  next();
+}
+
+/** Blocks the request with 403 unless the authenticated user has the ADMIN role. */
+export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+  if (req.user.role !== "ADMIN") {
+    return res.status(403).json({ error: "Forbidden" });
   }
   next();
 }

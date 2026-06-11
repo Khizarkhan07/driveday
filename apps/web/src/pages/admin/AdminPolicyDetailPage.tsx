@@ -1,0 +1,165 @@
+import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { api, apiBaseUrl } from "../../lib/api";
+import { Badge, Card } from "../../components/ui";
+
+interface PolicyDetail {
+  id: string;
+  policyNumber: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  issuedAt: string | null;
+  createdAt: string;
+  user: { id: string; email: string; firstName: string | null; lastName: string | null };
+  quote: {
+    totalPence: number;
+    durationDays: number;
+    driverDetails: Record<string, unknown>;
+    vehicle: { registration: string; make: string | null; model: string | null; colour: string | null; yearOfManufacture: number | null };
+  };
+  payment: { id: string; stripePaymentIntentId: string; amountPence: number; status: string } | null;
+  documents: { id: string; type: string; storageKey: string }[];
+}
+
+interface Event {
+  id: string;
+  eventType: string;
+  payload: unknown;
+  createdAt: string;
+}
+
+function money(pence: number) { return `£${(pence / 100).toFixed(2)}`; }
+function fmtDate(d: string | null) {
+  if (!d) return "—";
+  return new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London" });
+}
+function statusTone(s: string): "success" | "warning" | "neutral" {
+  if (s === "ISSUED" || s === "SUCCEEDED") return "success";
+  if (s === "PENDING" || s === "PROCESSING") return "warning";
+  return "neutral";
+}
+
+const DOC_LABELS: Record<string, string> = {
+  CERTIFICATE: "Certificate",
+  POLICY_SCHEDULE: "Policy Schedule",
+  IPID: "IPID",
+  POLICY_WORDING: "Policy Wording",
+  TERMS_OF_BUSINESS: "Terms of Business",
+};
+
+export function AdminPolicyDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const { data, isLoading } = useQuery<{ policy: PolicyDetail; events: Event[] }>({
+    queryKey: ["admin", "policies", id],
+    queryFn: () => api.get(`/admin/policies/${id}`),
+  });
+
+  if (isLoading) return <p className="text-ink-400 text-sm">Loading…</p>;
+  if (!data) return <p className="text-red-400 text-sm">Policy not found</p>;
+
+  const { policy, events } = data;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Link to="/admin/policies" className="text-ink-400 hover:text-white text-sm transition">← Policies</Link>
+      </div>
+
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-extrabold text-white">{policy.policyNumber}</h1>
+          <p className="text-ink-400 text-sm mt-0.5">Issued {fmtDate(policy.issuedAt)}</p>
+        </div>
+        <Badge tone={statusTone(policy.status)}>{policy.status}</Badge>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Card>
+          <h2 className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-3">Policyholder</h2>
+          <Link to={`/admin/users/${policy.user.id}`} className="hover:text-brand-400 transition">
+            <p className="text-white font-semibold">{policy.user.firstName} {policy.user.lastName}</p>
+            <p className="text-ink-400 text-sm">{policy.user.email}</p>
+          </Link>
+        </Card>
+
+        <Card>
+          <h2 className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-3">Vehicle</h2>
+          <p className="text-white font-semibold">{policy.quote.vehicle.registration}</p>
+          <p className="text-ink-400 text-sm">
+            {policy.quote.vehicle.make} {policy.quote.vehicle.model}
+            {policy.quote.vehicle.colour ? ` · ${policy.quote.vehicle.colour}` : ""}
+            {policy.quote.vehicle.yearOfManufacture ? ` · ${policy.quote.vehicle.yearOfManufacture}` : ""}
+          </p>
+        </Card>
+
+        <Card>
+          <h2 className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-3">Cover period</h2>
+          <p className="text-white">{fmtDate(policy.startDate)}</p>
+          <p className="text-ink-400 text-sm">to {fmtDate(policy.endDate)}</p>
+          <p className="text-ink-500 text-xs mt-1">{policy.quote.durationDays} day{policy.quote.durationDays !== 1 ? "s" : ""}</p>
+        </Card>
+
+        <Card>
+          <h2 className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-3">Payment</h2>
+          <p className="text-2xl font-extrabold text-brand-400">{money(policy.quote.totalPence)}</p>
+          {policy.payment && (
+            <>
+              <Badge tone={statusTone(policy.payment.status)} >{policy.payment.status}</Badge>
+              <p className="text-ink-500 text-xs mt-2 break-all">{policy.payment.stripePaymentIntentId}</p>
+            </>
+          )}
+        </Card>
+      </div>
+
+      <Card>
+        <h2 className="text-xs text-ink-400 uppercase tracking-wider font-semibold mb-3">Documents</h2>
+        {policy.documents.length === 0 ? (
+          <p className="text-ink-500 text-sm">No documents</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {policy.documents.map((doc) => (
+              <a
+                key={doc.id}
+                href={`${apiBaseUrl}/portal/documents/${doc.id}/download`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-ink-800 border border-ink-700 px-3 py-2 text-sm text-white hover:bg-ink-700 hover:border-brand-400/40 transition"
+              >
+                <svg className="w-4 h-4 text-ink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                {DOC_LABELS[doc.type] ?? doc.type}
+              </a>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <div>
+        <h2 className="text-base font-bold text-white mb-3">Event log</h2>
+        <Card className="p-0 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-ink-700/60 text-ink-400 text-xs uppercase tracking-wider">
+                <th className="text-left px-5 py-3 font-semibold">Event</th>
+                <th className="text-left px-5 py-3 font-semibold">When</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((e) => (
+                <tr key={e.id} className="border-b border-ink-800/40 last:border-0">
+                  <td className="px-5 py-2.5 text-white font-medium">{e.eventType}</td>
+                  <td className="px-5 py-2.5 text-ink-400 text-xs">{fmtDate(e.createdAt)}</td>
+                </tr>
+              ))}
+              {events.length === 0 && (
+                <tr><td colSpan={2} className="px-5 py-6 text-center text-ink-500">No events</td></tr>
+              )}
+            </tbody>
+          </table>
+        </Card>
+      </div>
+    </div>
+  );
+}

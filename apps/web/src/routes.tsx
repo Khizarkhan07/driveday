@@ -11,6 +11,13 @@ import { SignupPage } from "./pages/SignupPage";
 import { LoginPage } from "./pages/LoginPage";
 import { PortalPage } from "./pages/PortalPage";
 import { PortalPolicyDetailPage } from "./pages/PortalPolicyDetailPage";
+import { AdminLayout } from "./pages/admin/AdminLayout";
+import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
+import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
+import { AdminUserDetailPage } from "./pages/admin/AdminUserDetailPage";
+import { AdminPoliciesPage } from "./pages/admin/AdminPoliciesPage";
+import { AdminPolicyDetailPage } from "./pages/admin/AdminPolicyDetailPage";
+import { AdminEventsPage } from "./pages/admin/AdminEventsPage";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +34,17 @@ export const router = createBrowserRouter([
       { path: "/login", element: <LoginPage /> },
       { path: "/portal", element: <PortalPage /> },
       { path: "/portal/policies/:id", element: <PortalPolicyDetailPage /> },
+    ],
+  },
+  {
+    element: <AdminLayout />,
+    children: [
+      { path: "/admin", element: <AdminDashboardPage /> },
+      { path: "/admin/users", element: <AdminUsersPage /> },
+      { path: "/admin/users/:id", element: <AdminUserDetailPage /> },
+      { path: "/admin/policies", element: <AdminPoliciesPage /> },
+      { path: "/admin/policies/:id", element: <AdminPolicyDetailPage /> },
+      { path: "/admin/events", element: <AdminEventsPage /> },
     ],
   },
 ]);
