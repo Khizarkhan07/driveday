@@ -235,10 +235,10 @@ export function LandingPage() {
           <h2 className="font-display text-4xl sm:text-5xl font-semibold mt-3">Can I get a policy?</h2>
           <p className="mt-4 text-ink/65 text-lg">You can get 1-day cover with DayDrive if you:</p>
           <div className="mt-6 grid sm:grid-cols-2 gap-3">
-            {["Are aged 19 to 75", "Held a full UK/EU licence for 6+ months", "Have no more than 6 penalty points", "Not disqualified in the last 3 years"].map((item) => (
+            {["Are aged 19 to 75", "Held a full UK/EU licence for 6+ months"].map((item) => (
               <div key={item} className="bg-white rounded-xl p-4 ring-1 ring-ink/5 flex gap-3"><span className="text-mint-700 shrink-0">✓</span> {item}</div>
             ))}
-            <div className="bg-white rounded-xl p-4 ring-1 ring-ink/5 flex gap-3 sm:col-span-2"><span className="text-mint-700 shrink-0">✓</span> Insuring a car, van or motorhome worth under £65,000</div>
+            <div className="bg-white rounded-xl p-4 ring-1 ring-ink/5 flex gap-3 sm:col-span-2"><span className="text-mint-700 shrink-0">✓</span> Insuring a car, bike, van, quad or motorhome worth under £65,000</div>
           </div>
           <p className="mt-5 text-ink/60">The vehicle needs valid tax and MOT. That's it.</p>
         </div>
