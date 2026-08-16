@@ -1,3 +1,4 @@
+import { classifyVehicleType } from "@motorcover/shared-types";
 import { env } from "../../config/env";
 import type { VehicleLookupProvider, VehicleLookupResult } from "./types";
 import { ProviderNotConfiguredError, VehicleNotFoundError } from "./types";
@@ -78,7 +79,12 @@ export class OneAutoApiVehicleLookupProvider implements VehicleLookupProvider {
       yearOfManufacture:
         body?.yearOfManufacture ?? body?.YearOfManufacture ?? undefined,
       fuelType: body?.fuelType ?? body?.FuelType ?? undefined,
-      vehicleType: "car",
+      // Field names here are still assumed, like the rest of this mapping —
+      // classify falls back to "car" when neither is present.
+      vehicleType: classifyVehicleType(
+        body?.typeApproval ?? body?.TypeApproval,
+        body?.wheelplan ?? body?.Wheelplan
+      ),
     };
   }
 }

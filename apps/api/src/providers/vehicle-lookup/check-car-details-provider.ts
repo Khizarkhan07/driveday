@@ -1,3 +1,4 @@
+import { classifyVehicleType } from "@motorcover/shared-types";
 import { env } from "../../config/env";
 import type { VehicleLookupProvider, VehicleLookupResult } from "./types";
 import { VehicleNotFoundError } from "./types";
@@ -33,7 +34,7 @@ export class CheckCarDetailsProvider implements VehicleLookupProvider {
       colour: body.colour ? body.colour.toUpperCase() : undefined,
       yearOfManufacture: body.yearOfManufacture,
       fuelType: body.fuelType ? body.fuelType.toUpperCase() : undefined,
-      vehicleType: "car",
+      vehicleType: classifyVehicleType(body.typeApproval, body.wheelplan),
     };
   }
 }
@@ -47,6 +48,10 @@ interface CheckCarDetailsResponse {
   fuelType?: string;
   engineCapacity?: number;
   yearOfManufacture?: number;
+  /** EU vehicle category (M1, N1, N3, L3…). Null on pre-1996 vehicles. */
+  typeApproval?: string | null;
+  /** e.g. "2 AXLE RIGID BODY", "2 WHEEL", "ARTICULATED". */
+  wheelplan?: string | null;
   vehicleAge?: string;
   co2Emissions?: number;
   registrationPlace?: string;

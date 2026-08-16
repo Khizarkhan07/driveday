@@ -1,3 +1,4 @@
+import { classifyVehicleType } from "@motorcover/shared-types";
 import { env } from "../../config/env";
 import type { VehicleLookupProvider, VehicleLookupResult } from "./types";
 import { ProviderNotConfiguredError, VehicleNotFoundError } from "./types";
@@ -68,7 +69,8 @@ export class DvlaVesVehicleLookupProvider implements VehicleLookupProvider {
       colour: body?.colour ?? undefined,
       yearOfManufacture: body?.yearOfManufacture ?? undefined,
       fuelType: body?.fuelType ?? undefined,
-      vehicleType: "car",
+      // VES exposes the same DVLA category and wheelplan fields.
+      vehicleType: classifyVehicleType(body?.typeApproval, body?.wheelplan),
     };
   }
 }

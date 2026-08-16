@@ -21,7 +21,72 @@ export const vehicleLookupResultSchema = z.object({
   colour: z.string().optional(),
   yearOfManufacture: z.number().int().optional(),
   fuelType: z.string().optional(),
-  vehicleType: z.enum(["car", "van", "motorcycle", "other"]).default("car"),
+  vehicleType: z.enum(["car", "van", "motorcycle", "hgv", "other"]).default("car"),
   source: z.enum(["mock", "oneautoapi", "dvla", "checkcardetails"]),
 });
 export type VehicleLookupResult = z.infer<typeof vehicleLookupResultSchema>;
+
+export type VehicleType = VehicleLookupResult["vehicleType"];
+
+export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
+  car: "Car",
+  van: "Van",
+  motorcycle: "Motorcycle",
+  hgv: "HGV",
+  other: "Other",
+};
+
+/**
+ * Derives our vehicle type from DVLA data.
+ *
+ * `typeApproval` is the EU vehicle category and the authoritative signal:
+ *   M1        passenger car        -> car
+ *   M2 / M3   bus / coach          -> other
+ *   N1        goods up to 3.5t     -> van
+ *   N2 / N3   goods over 3.5t      -> hgv
+ *   L1..L7    mopeds / motorcycles -> motorcycle
+ *   O1..O4    trailers             -> other
+ *
+ * EU type approval only became mandatory in the UK from the mid-90s, so
+ * pre-1996 vehicles come back with it null (a 1961 Triumph returns no
+ * category but a "2 WHEEL" wheelplan). `wheelplan` is the fallback for those.
+ *
+ * Anything unrecognised falls back to "car", matching the schema default —
+ * a lookup should never fail because of an unfamiliar category code.
+ */
+export function classifyVehicleType(
+  typeApproval?: string | null,
+  wheelplan?: string | null
+): VehicleType {
+  const code = typeApproval?.trim().toUpperCase() ?? "";
+
+  if (code) {
+    // Category letter plus its first digit; "L3e" and "L3" both yield L/3.
+    const letter = code[0];
+    const digit = code[1];
+
+    if (letter === "L") return "motorcycle";
+    if (letter === "M") return digit === "1" ? "car" : "other";
+    if (letter === "N") return digit === "1" ? "van" : "hgv";
+    if (letter === "O" || letter === "T" || letter === "C") return "other";
+  }
+
+  return classifyByWheelplan(wheelplan);
+}
+
+function classifyByWheelplan(wheelplan?: string | null): VehicleType {
+  const plan = wheelplan?.trim().toUpperCase() ?? "";
+  if (!plan) return "car";
+
+  // "2 WHEEL" / "3 WHEEL" describe bikes and trikes; anything measured in
+  // axles is a four-wheeled vehicle.
+  if (plan.includes("WHEEL") && !plan.includes("AXLE")) return "motorcycle";
+  if (plan.includes("ARTICULATED")) return "hgv";
+
+  const axles = Number(/^(\d+)\s*AXLE/.exec(plan)?.[1] ?? 0);
+  if (axles >= 3) return "hgv";
+
+  // A 2-axle rigid body is a car, a van or a small truck — indistinguishable
+  // without a category code, so take the most common case.
+  return "car";
+}

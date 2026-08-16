@@ -15,7 +15,10 @@ interface PolicyRow {
   issuedAt: string | null;
   createdAt: string;
   user: { id: string; email: string; firstName: string | null; lastName: string | null };
-  quote: { totalPence: number; vehicle: { registration: string; make: string | null; model: string | null } };
+  quote: {
+    totalPence: number;
+    vehicle: { registration: string; make: string | null; model: string | null; vehicleType: string };
+  };
   _count: { documents: number };
 }
 
@@ -116,7 +119,14 @@ export function AdminPoliciesPage() {
                     </Link>
                   </td>
                   <td className="px-5 py-3 text-ink/70">
-                    <p className="font-medium">{p.quote.vehicle.registration}</p>
+                    <p className="font-medium">
+                      {p.quote.vehicle.registration}
+                      {p.quote.vehicle.vehicleType !== "car" && (
+                        <span className="ml-2 rounded-md bg-ink/8 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink/60 align-middle">
+                          {p.quote.vehicle.vehicleType}
+                        </span>
+                      )}
+                    </p>
                     <p className="text-xs text-ink/45">{p.quote.vehicle.make} {p.quote.vehicle.model}</p>
                   </td>
                   <td className="px-5 py-3">
