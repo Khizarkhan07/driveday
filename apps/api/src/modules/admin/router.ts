@@ -1,7 +1,18 @@
 import { Router } from "express";
+import { createdAtFilter, dateRangeQuerySchema } from "@motorcover/shared-types";
 import { prisma, logEvent } from "../../db/client";
 import { requireAdmin } from "../../middleware/require-auth";
 import { getDocumentStorage } from "../../providers/storage/factory";
+
+/**
+ * Reads the optional `from`/`to` range off a request. Invalid values are
+ * ignored rather than rejected so a stale bookmark degrades to "all time"
+ * instead of erroring the whole dashboard.
+ */
+function rangeFilter(query: unknown) {
+  const parsed = dateRangeQuerySchema.safeParse(query);
+  return parsed.success ? createdAtFilter(parsed.data) : undefined;
+}
 
 const DOWNLOAD_FILENAMES = {
   CERTIFICATE: "certificate-of-insurance.pdf",
@@ -118,15 +129,22 @@ adminRouter.get("/policies", async (req, res) => {
   const limit = 20;
   const skip = (page - 1) * limit;
 
-  const where = search
-    ? {
-        OR: [
-          { policyNumber: { contains: search, mode: "insensitive" as const } },
-          { user: { email: { contains: search, mode: "insensitive" as const } } },
-          { quote: { vehicle: { registration: { contains: search, mode: "insensitive" as const } } } },
-        ],
-      }
-    : {};
+  const createdAt = rangeFilter(req.query);
+
+  // Search and date range are independent constraints, so they combine with
+  // AND — the search terms stay grouped in their own OR.
+  const where = {
+    ...(createdAt ? { createdAt } : {}),
+    ...(search
+      ? {
+          OR: [
+            { policyNumber: { contains: search, mode: "insensitive" as const } },
+            { user: { email: { contains: search, mode: "insensitive" as const } } },
+            { quote: { vehicle: { registration: { contains: search, mode: "insensitive" as const } } } },
+          ],
+        }
+      : {}),
+  };
 
   const [policies, total] = await Promise.all([
     prisma.policy.findMany({
@@ -207,12 +225,18 @@ adminRouter.get("/events", async (req, res) => {
 
 // ─── Dashboard stats ──────────────────────────────────────────────────────────
 
-adminRouter.get("/stats", async (_req, res) => {
+adminRouter.get("/stats", async (req, res) => {
+  const createdAt = rangeFilter(req.query);
+  const scope = createdAt ? { createdAt } : {};
+
   const [totalUsers, totalPolicies, totalRevenuePence, recentEvents] = await Promise.all([
-    prisma.user.count(),
-    prisma.policy.count(),
-    prisma.payment.aggregate({ where: { status: "SUCCEEDED" }, _sum: { amountPence: true } }),
-    prisma.eventLog.findMany({ orderBy: { createdAt: "desc" }, take: 10 }),
+    prisma.user.count({ where: scope }),
+    prisma.policy.count({ where: scope }),
+    prisma.payment.aggregate({
+      where: { status: "SUCCEEDED", ...scope },
+      _sum: { amountPence: true },
+    }),
+    prisma.eventLog.findMany({ where: scope, orderBy: { createdAt: "desc" }, take: 10 }),
   ]);
 
   res.json({
@@ -220,6 +244,7 @@ adminRouter.get("/stats", async (_req, res) => {
     totalPolicies,
     totalRevenuePence: totalRevenuePence._sum.amountPence ?? 0,
     recentEvents,
+    filtered: Boolean(createdAt),
   });
 });
 

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { Badge, Card } from "../../components/ui";
+import { DateRangeFilter } from "../../components/DateRangeFilter";
+import { rangeQuery, useAdminFilterStore } from "../../lib/admin-filter-store";
 
 interface PolicyRow {
   id: string;
@@ -40,10 +42,20 @@ export function AdminPoliciesPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [input, setInput] = useState("");
+  const range = useAdminFilterStore((s) => s.range);
+
+  // A narrower range usually means fewer pages — without this you can be left
+  // stranded on a page number the filtered result set no longer has.
+  useEffect(() => {
+    setPage(1);
+  }, [range.from, range.to]);
 
   const { data, isLoading } = useQuery<PoliciesResponse>({
-    queryKey: ["admin", "policies", search, page],
-    queryFn: () => api.get(`/admin/policies?search=${encodeURIComponent(search)}&page=${page}`),
+    queryKey: ["admin", "policies", search, page, range.from, range.to],
+    queryFn: () =>
+      api.get(
+        `/admin/policies?search=${encodeURIComponent(search)}&page=${page}${rangeQuery(range)}`
+      ),
   });
 
   function handleSearch(e: React.FormEvent) {
@@ -70,6 +82,8 @@ export function AdminPoliciesPage() {
           Search
         </button>
       </form>
+
+      <DateRangeFilter />
 
       <Card className="p-0 overflow-hidden">
         {isLoading ? (
