@@ -1,21 +1,11 @@
 import { Router } from "express";
-import { createQuoteRequestSchema } from "@motorcover/shared-types";
+import { createQuoteRequestSchema, type VehicleType } from "@motorcover/shared-types";
 import { prisma, logEvent } from "../../db/client";
 import { attachUser } from "../../middleware/require-auth";
 import { calculatePremium } from "./pricing";
 import { pricingConfig } from "./pricing.config";
 
 export const quoteRouter = Router();
-
-function calculateAge(dateOfBirth: string, asOf: Date): number {
-  const dob = new Date(dateOfBirth);
-  let age = asOf.getFullYear() - dob.getFullYear();
-  const hasHadBirthdayThisYear =
-    asOf.getMonth() > dob.getMonth() ||
-    (asOf.getMonth() === dob.getMonth() && asOf.getDate() >= dob.getDate());
-  if (!hasHadBirthdayThisYear) age -= 1;
-  return age;
-}
 
 quoteRouter.post("/", attachUser, async (req, res) => {
   const parsed = createQuoteRequestSchema.safeParse(req.body);
@@ -38,8 +28,7 @@ quoteRouter.post("/", attachUser, async (req, res) => {
   const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
   const durationDays = 1;
 
-  const driverAge = calculateAge(driver.dateOfBirth, start);
-  const breakdown = calculatePremium({ driverAge });
+  const breakdown = calculatePremium({ vehicleType: vehicle.vehicleType as VehicleType });
 
   const expiresAt = new Date(Date.now() + pricingConfig.quoteValidityHours * 60 * 60 * 1000);
 

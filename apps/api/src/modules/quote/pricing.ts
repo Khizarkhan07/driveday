@@ -1,8 +1,8 @@
-import type { PricingBreakdown } from "@motorcover/shared-types";
+import type { PricingBreakdown, VehicleType } from "@motorcover/shared-types";
 import { pricingConfig as defaultConfig } from "./pricing.config";
 
 export interface PricingInput {
-  driverAge: number;
+  vehicleType: VehicleType;
 }
 
 export type PricingConfig = typeof defaultConfig;
@@ -11,7 +11,7 @@ export function calculatePremium(
   input: PricingInput,
   config: PricingConfig = defaultConfig
 ): PricingBreakdown {
-  const ratePence = resolveRate(input.driverAge, config);
+  const ratePence = resolveRate(input.vehicleType, config);
 
   return {
     baseRatePence: ratePence,
@@ -26,9 +26,11 @@ export function calculatePremium(
   };
 }
 
-function resolveRate(age: number, config: PricingConfig): number {
-  for (const band of config.ageBands) {
-    if (age <= band.maxAge) return band.ratePence;
-  }
-  return config.defaultRatePence;
+/**
+ * Falls back to the car rate for anything unrecognised. `vehicleType` is a
+ * plain string in the database, so a row written before a type existed (or by
+ * hand) can still reach this.
+ */
+function resolveRate(vehicleType: VehicleType, config: PricingConfig): number {
+  return config.vehicleTypeRates[vehicleType] ?? config.vehicleTypeRates.car;
 }
