@@ -1,6 +1,6 @@
 import React from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
-import type { DocumentType } from "@motorcover/shared-types";
+import type { CoverType, DocumentType } from "@motorcover/shared-types";
 import { prisma, logEvent } from "../../db/client";
 import { getDocumentStorage } from "../../providers/storage/factory";
 import { CertificateDocument } from "./templates/CertificateDocument";
@@ -56,6 +56,7 @@ interface PolicyForDocs {
     totalPence: number;
     durationDays: number;
     driverDetails: unknown;
+    coverType: string;
     vehicle: { registration: string; make: string | null; model: string | null };
   };
 }
@@ -131,6 +132,9 @@ export async function generatePolicyDocuments(
   const endDate = formatDate(policy.endDate);
   const dateOfIssue = formatDate(policy.issuedAt ?? policy.startDate);
   const insuredAddress = buildAddress(policy.quote.driverDetails);
+  // Stored as a plain string; anything unrecognised falls back to personal so
+  // a document can never be issued with unintended business permissions.
+  const coverType: CoverType = policy.quote.coverType === "BUSINESS" ? "BUSINESS" : "PERSONAL";
   const dd = policy.quote.driverDetails as {
     addressLine1: string; addressLine2?: string; city: string; postcode: string;
     dateOfBirth: string; licenceNumber: string; yearsHeldLicence: number;
@@ -138,6 +142,7 @@ export async function generatePolicyDocuments(
 
   const certificateBuffer = await renderDocument(
     React.createElement(CertificateDocument, {
+      coverType,
       policyNumber: policy.policyNumber,
       policyholderName: name,
       vehicleRegistration: policy.quote.vehicle.registration,
@@ -182,7 +187,7 @@ export async function generatePolicyDocuments(
   );
 
   const policyWordingBuffer = await renderDocument(
-    React.createElement(PolicyWordingDocument)
+    React.createElement(PolicyWordingDocument, { coverType })
   );
 
   const tobaBuffer = await renderDocument(

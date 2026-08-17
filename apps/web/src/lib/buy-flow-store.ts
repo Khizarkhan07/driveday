@@ -1,14 +1,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { DriverDetails, VehicleLookupResult } from "@motorcover/shared-types";
+import type { CoverType, DriverDetails, VehicleLookupResult } from "@motorcover/shared-types";
 
 export interface BuyFlowState {
+  coverType: CoverType;
   vehicle: (VehicleLookupResult & { id: string }) | null;
   startDate: string | null;
   endDate: string | null;
   driver: DriverDetails | null;
   quoteId: string | null;
 
+  setCoverType: (coverType: CoverType) => void;
   setVehicle: (vehicle: (VehicleLookupResult & { id: string }) | null) => void;
   setCoverDetails: (startDate: string, endDate: string) => void;
   setDriver: (driver: DriverDetails) => void;
@@ -17,6 +19,7 @@ export interface BuyFlowState {
 }
 
 const initialState = {
+  coverType: "PERSONAL" as CoverType,
   vehicle: null,
   startDate: null,
   endDate: null,
@@ -34,11 +37,15 @@ export const useBuyFlowStore = create<BuyFlowState>()(
   persist(
     (set) => ({
       ...initialState,
+      setCoverType: (coverType) => set({ coverType }),
       setVehicle: (vehicle) => set({ vehicle }),
       setCoverDetails: (startDate, endDate) => set({ startDate, endDate }),
       setDriver: (driver) => set({ driver }),
       setQuoteId: (quoteId) => set({ quoteId }),
-      reset: () => set(initialState),
+      // Cover type is chosen on the landing page *before* the lookup that
+      // starts a new flow, and reset() runs on that lookup — so clearing it
+      // here would silently discard the customer's Business selection.
+      reset: () => set((s) => ({ ...initialState, coverType: s.coverType })),
     }),
     {
       name: "daydrive-buy-flow",

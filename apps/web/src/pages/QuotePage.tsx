@@ -23,12 +23,12 @@ function money(pence: number): string {
 
 export function QuotePage() {
   const navigate = useNavigate();
-  const { vehicle, startDate, endDate, driver, quoteId, setQuoteId } = useBuyFlowStore();
+  const { vehicle, startDate, endDate, driver, quoteId, setQuoteId, coverType } = useBuyFlowStore();
   const { data: userData } = useCurrentUser();
 
   const createQuote = useMutation({
     mutationFn: () =>
-      api.post<QuoteResponse>("/quote", { vehicleId: vehicle!.id, startDate, endDate, driver }),
+      api.post<QuoteResponse>("/quote", { vehicleId: vehicle!.id, startDate, endDate, driver, coverType }),
     onSuccess: ({ quote }) => setQuoteId(quote.id),
   });
 

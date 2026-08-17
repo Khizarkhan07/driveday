@@ -12,7 +12,7 @@ quoteRouter.post("/", attachUser, async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid input", details: parsed.error.flatten() });
   }
-  const { vehicleId, startDate, driver } = parsed.data;
+  const { vehicleId, startDate, driver, coverType } = parsed.data;
 
   const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
   if (!vehicle) {
@@ -40,6 +40,7 @@ quoteRouter.post("/", attachUser, async (req, res) => {
       endDate: end,
       durationDays,
       driverDetails: driver as object,
+      coverType,
       pricingBreakdown: breakdown as object,
       totalPence: breakdown.totalPence,
       currency: breakdown.currency,

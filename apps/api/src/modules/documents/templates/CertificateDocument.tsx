@@ -1,4 +1,5 @@
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { BUSINESS_COVER_PLATFORMS, type CoverType } from "@motorcover/shared-types";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
 import { SignatureBlock } from "./SignatureBlock";
@@ -99,6 +100,7 @@ export interface CertificateDocumentProps {
   vehicleDescription: string;
   startDate: string;
   endDate: string;
+  coverType?: CoverType;
 }
 
 export function CertificateDocument({
@@ -108,6 +110,7 @@ export function CertificateDocument({
   vehicleDescription,
   startDate,
   endDate,
+  coverType = "PERSONAL",
 }: CertificateDocumentProps) {
   return (
     <DemoDocumentLayout title="">
@@ -228,13 +231,29 @@ export function CertificateDocument({
             <View style={s.numCell}><Text style={s.numText}>6.</Text></View>
             <View style={s.labelCell}><Text style={s.labelText}>Limitations as to use</Text></View>
             <View style={s.limitContent}>
-              <Text style={s.limitText}>
-                Use for Social Domestic and Pleasure Purposes and by the Insured in person in connection with
-                his/her business or profession, excluding commercial travelling or the carriage of goods or samples
-                in connection with any trade or business, use for hiring, the letting on hire, the carriage of
-                passengers or goods for hire or reward, racing, pacemaking, use on any track, test circuit or off
-                road activity, use in any contest, reliability or speed trial, or use in connection with the Motor Trade.
-              </Text>
+              {coverType === "BUSINESS" ? (
+                <>
+                  {/* Business cover permits hire and reward for the named
+                      platforms and excludes ordinary personal use — the
+                      inverse of the standard permission below. */}
+                  <Text style={s.limitText}>
+                    Business use for the transportation of goods for Hire and Reward whilst working for:{" "}
+                    {BUSINESS_COVER_PLATFORMS.join(", ")}.
+                  </Text>
+                  <Text style={s.limitText}>
+                    Excluding: For Social Domestic and Pleasure use including commuting; racing, pacemaking,
+                    speed testing; for the carriage of passengers for hire or reward.
+                  </Text>
+                </>
+              ) : (
+                <Text style={s.limitText}>
+                  Use for Social Domestic and Pleasure Purposes and by the Insured in person in connection with
+                  his/her business or profession, excluding commercial travelling or the carriage of goods or samples
+                  in connection with any trade or business, use for hiring, the letting on hire, the carriage of
+                  passengers or goods for hire or reward, racing, pacemaking, use on any track, test circuit or off
+                  road activity, use in any contest, reliability or speed trial, or use in connection with the Motor Trade.
+                </Text>
+              )}
               <Text style={s.limitText}>
                 Excluding use to secure the release of any motor vehicle which has been confiscated, seized or
                 impounded by, or on behalf of, any Government or public authority.

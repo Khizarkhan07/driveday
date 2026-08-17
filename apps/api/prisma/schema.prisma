@@ -72,6 +72,8 @@ model Quote {
   pricingBreakdown Json
   totalPence       Int
   currency         String      @default("gbp")
+  // "PERSONAL" | "BUSINESS" — see coverTypeSchema in shared-types.
+  coverType        String      @default("PERSONAL")
   status           QuoteStatus @default(DRAFT)
   expiresAt        DateTime
   createdAt        DateTime    @default(now())

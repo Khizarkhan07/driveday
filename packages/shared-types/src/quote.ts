@@ -39,11 +39,32 @@ export const coverDetailsSchema = z
   });
 export type CoverDetails = z.infer<typeof coverDetailsSchema>;
 
+/**
+ * PERSONAL is the standard social, domestic and pleasure policy.
+ *
+ * BUSINESS is a distinct product rather than an add-on: it covers carriage of
+ * goods for hire and reward for the named delivery platforms, and *excludes*
+ * social, domestic and pleasure use including commuting. The two are mutually
+ * exclusive, which is why the documents swap their wording rather than append.
+ */
+export const coverTypeSchema = z.enum(["PERSONAL", "BUSINESS"]);
+export type CoverType = z.infer<typeof coverTypeSchema>;
+
+export const COVER_TYPE_LABELS: Record<CoverType, string> = {
+  PERSONAL: "Personal",
+  BUSINESS: "Business",
+};
+
+/** Delivery platforms the business policy covers work for. */
+export const BUSINESS_COVER_PLATFORMS = ["JUST EAT", "DELIVEROO", "UBER EATS"] as const;
+
 export const createQuoteRequestSchema = z.object({
   vehicleId: z.string().min(1),
   startDate: z.string().datetime(),
   endDate: z.string().datetime(),
   driver: driverDetailsSchema,
+  // Optional so clients that predate business cover keep working.
+  coverType: coverTypeSchema.default("PERSONAL"),
 });
 export type CreateQuoteRequest = z.infer<typeof createQuoteRequestSchema>;
 

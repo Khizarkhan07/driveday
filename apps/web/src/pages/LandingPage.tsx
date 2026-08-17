@@ -1,16 +1,32 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { ukRegistrationSchema, type VehicleLookupResult } from "@motorcover/shared-types";
+import {
+  BUSINESS_COVER_PLATFORMS,
+  COVER_TYPE_LABELS,
+  ukRegistrationSchema,
+  type VehicleLookupResult,
+} from "@motorcover/shared-types";
 import { api, ApiError } from "../lib/api";
 import { useBuyFlowStore } from "../lib/buy-flow-store";
 import { useCurrentUser, useLogout } from "../lib/auth";
+
+/** Advertised 1-day rates, cheapest first. Mirrors the API pricing config. */
+const PRICE_LIST = [
+  { label: "Bike", price: "£15" },
+  { label: "Car", price: "£25" },
+  { label: "Van", price: "£30" },
+  { label: "HGV", price: "£45" },
+];
+const FROM_PRICE = PRICE_LIST[0].price;
 
 export function LandingPage() {
   const navigate = useNavigate();
   const setVehicle = useBuyFlowStore((s) => s.setVehicle);
   const reset = useBuyFlowStore((s) => s.reset);
   const [registration, setRegistration] = useState("");
+  const coverType = useBuyFlowStore((s) => s.coverType);
+  const setCoverType = useBuyFlowStore((s) => s.setCoverType);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { data } = useCurrentUser();
   const logout = useLogout();
@@ -81,7 +97,7 @@ export function LandingPage() {
           {/* Left copy */}
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-white text-ink px-3.5 py-1.5 text-xs font-bold tracking-wide ring-1 ring-ink/10 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse" /> INSTANT COVER · ONE PRICE · £15
+              <span className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse" /> INSTANT COVER · FROM {FROM_PRICE}
             </span>
             <h1 className="font-display font-bold tracking-[-0.02em] text-[3.4rem] sm:text-7xl leading-[0.92] mt-6">
               Insure a car<br />for the day.<br />
@@ -120,6 +136,30 @@ export function LandingPage() {
               onSubmit={handleSubmit}
               className="absolute -bottom-6 left-4 right-4 sm:-bottom-8 sm:-left-6 sm:right-6 bg-white/85 backdrop-blur-xl rounded-2xl p-5 sm:p-6 shadow-[0_30px_80px_-24px_rgba(11,12,30,.5)] ring-1 ring-white/60"
             >
+              {/* Cover type — chosen before lookup so it carries through the flow */}
+              <div
+                role="tablist"
+                aria-label="Cover type"
+                className="flex gap-1 p-1 mb-4 rounded-xl bg-ink/[.06]"
+              >
+                {(["PERSONAL", "BUSINESS"] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    role="tab"
+                    aria-selected={coverType === type}
+                    onClick={() => setCoverType(type)}
+                    className={`flex-1 rounded-lg px-3 py-2 text-sm font-bold transition ${
+                      coverType === type
+                        ? "bg-white text-ink shadow-sm"
+                        : "text-ink/55 hover:text-ink"
+                    }`}
+                  >
+                    {COVER_TYPE_LABELS[type]}
+                  </button>
+                ))}
+              </div>
+
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-[11px] font-bold tracking-widest text-ink/40">STEP 1 OF 5</p>
@@ -127,6 +167,14 @@ export function LandingPage() {
                 </div>
                 <span className="text-xs font-bold text-mint-700 bg-mint/[.12] rounded-full px-2.5 py-1">~2 min</span>
               </div>
+
+              {coverType === "BUSINESS" && (
+                <p className="-mt-1 mb-3 text-xs text-ink/60 leading-relaxed">
+                  Covers carriage of goods for hire and reward for{" "}
+                  {BUSINESS_COVER_PLATFORMS.join(", ")}. Social, domestic and
+                  pleasure use including commuting is not covered.
+                </p>
+              )}
 
               {/* UK number plate */}
               <div style={{ display:"flex", alignItems:"stretch", overflow:"hidden", background:"#ffd80a", borderRadius:"9px", boxShadow:"inset 0 0 0 2px rgba(0,0,0,.18), 0 14px 34px -12px rgba(11,12,30,.4)" }}>
@@ -193,7 +241,7 @@ export function LandingPage() {
           <div className="mt-12 grid md:grid-cols-3 gap-6">
             {[
               { n: "01", title: "Tell us about you and the car", body: "Registration, your licence details, when you want cover to start. Two minutes of typing." },
-              { n: "02", title: "Get your price", body: "One clear price for 24 hours of comprehensive cover. No hidden admin fees bolted on at checkout." },
+              { n: "02", title: "Get your price", body: "One clear price for your vehicle, for 24 hours of comprehensive cover. No hidden admin fees bolted on at checkout." },
               { n: "03", title: "Drive", body: "Pay by card. Your Certificate of Insurance lands in your inbox straight away. Cover starts at the time you picked — down to the minute." },
             ].map((s) => (
               <div key={s.n} className="reveal bg-white rounded-2xl p-7 ring-1 ring-ink/5">
@@ -273,11 +321,19 @@ export function LandingPage() {
               <h3 className="font-display text-lg font-semibold text-mint">Emergencies</h3>
               <p className="mt-2 text-paper/70">Pick someone up, cover a school run, get to a hospital. Cover starts in minutes.</p>
             </div>
-            <div className="reveal rounded-2xl bg-mint p-6 flex items-center justify-center text-center text-ink">
-              <div>
-                <div className="font-display text-3xl font-bold">£15</div>
-                <div className="font-semibold mt-1">One day. One price.</div>
+            <div className="reveal rounded-2xl bg-mint p-6 text-ink">
+              <div className="text-center">
+                <div className="font-display text-3xl font-bold">From {FROM_PRICE}</div>
+                <div className="font-semibold mt-1">One day. Priced by vehicle.</div>
               </div>
+              <dl className="mt-4 pt-4 border-t border-ink/15 space-y-1.5 text-sm">
+                {PRICE_LIST.map((p) => (
+                  <div key={p.label} className="flex justify-between">
+                    <dt className="text-ink/70">{p.label}</dt>
+                    <dd className="font-semibold">{p.price}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
         </div>
@@ -337,7 +393,7 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-mint" />
         <div className="mx-auto max-w-3xl px-5 text-center relative text-ink">
           <h2 className="font-display text-5xl sm:text-6xl font-bold reveal">Need to drive today?</h2>
-          <p className="mt-4 text-xl font-medium reveal">Get covered in the next 15 minutes. One day. One price. £15.</p>
+          <p className="mt-4 text-xl font-medium reveal">Get covered in the next 15 minutes. One day’s cover from {FROM_PRICE}.</p>
           <a href="#quote" className="inline-block mt-8 rounded-full bg-ink text-paper px-8 py-4 text-lg font-bold hover:bg-ink-700 transition shadow-xl">
             Get my quote now →
           </a>

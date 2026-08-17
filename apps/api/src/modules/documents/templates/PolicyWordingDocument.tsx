@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { BUSINESS_COVER_PLATFORMS, type CoverType } from "@motorcover/shared-types";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
 
@@ -44,7 +45,43 @@ function Rule() {
   return <View style={styles.rule} />;
 }
 
-export function PolicyWordingDocument() {
+/**
+ * Business cover replaces the standard social/domestic/pleasure permission
+ * rather than extending it — commuting and personal use are excluded, and only
+ * hire-and-reward work for the named platforms is covered.
+ */
+function BusinessUseSection() {
+  return (
+    <>
+      <Rule />
+      <H1>Business Use — Limitations and Exclusions</H1>
+      <P>
+        This policy has been issued on a business use basis. The following
+        limitations and exclusions apply in place of the standard use terms and
+        take precedence over any conflicting wording elsewhere in this document.
+      </P>
+
+      <H2>7. Limitations as to use</H2>
+      <P>
+        Business use for the transportation of goods for Hire and Reward whilst
+        working for: {BUSINESS_COVER_PLATFORMS.join(", ")}.
+      </P>
+
+      <H2>8. Exclusions</H2>
+      <Bullet>For Social Domestic and Pleasure use including commuting</Bullet>
+      <Bullet>Racing, pacemaking, speed testing</Bullet>
+      <Bullet>For the carriage of passengers for hire or reward</Bullet>
+    </>
+  );
+}
+
+export interface PolicyWordingDocumentProps {
+  coverType?: CoverType;
+}
+
+export function PolicyWordingDocument({
+  coverType = "PERSONAL",
+}: PolicyWordingDocumentProps) {
   return (
     <DemoDocumentLayout title="">
       <View style={{ marginTop: -20, flexDirection: "row", alignItems: "center", borderBottomWidth: 1, borderBottomColor: "#e5e7eb", paddingBottom: 8, marginBottom: 10 }}>
@@ -80,6 +117,9 @@ export function PolicyWordingDocument() {
       <ContentsRow title="Contract of Motor Insurance — Highway Short Term Policy" page="9" />
       <ContentsRow title="Cover" page="9" />
       <ContentsRow title="Use" page="10" />
+      {coverType === "BUSINESS" && (
+        <ContentsRow title="Business Use — Limitations and Exclusions" page="12" />
+      )}
       <ContentsRow title="Cancelling your Policy" page="10" />
       <ContentsRow title="Changes to your details" page="11" />
       <ContentsRow title="Section 1 — Liability to others: Third Party Cover" page="13" />
@@ -284,6 +324,8 @@ export function PolicyWordingDocument() {
       <P>
         If you do not tell your insurance adviser of a change we will be entitled to reject or reduce payment of your claim, or cancel the policy and/or treat it as though it never existed.
       </P>
+
+      {coverType === "BUSINESS" && <BusinessUseSection />}
 
       <Rule />
 
