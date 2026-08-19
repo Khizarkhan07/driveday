@@ -3,17 +3,22 @@ import { env } from "../../config/env";
 import { generatePolicyDocuments } from "../documents/service";
 import { getEmailProvider } from "../../providers/email/factory";
 import { renderPolicyConfirmationEmail } from "../email/templates";
+import { createWithUniqueNumber, nextSequenceFrom, parsePolicySequence } from "./policy-number";
 
 /**
- * Generates a demo-formatted policy reference, e.g. DEMO-2023-000123.
- * Deliberately prefixed "DEMO" so it can never be mistaken for a real
- * policy number, and visibly distinct from any real insurer's numbering.
+ * The highest policy sequence ever issued. Read from the existing numbers
+ * rather than the row count so deleting a policy can never cause the next
+ * issuance to reuse a number that is already taken.
  */
-async function generatePolicyNumber(): Promise<string> {
-  const year = 2023;
-  const count = await prisma.policy.count();
-  const sequence = String(count + 1).padStart(6, "0");
-  return `Policy-${year}-${sequence}`;
+async function highestIssuedSequence(): Promise<number> {
+  // Compares the numeric sequence, not the string. Policy numbers carry a year
+  // prefix that has not always been the same value, and a plain string sort
+  // would rank a higher year above a higher sequence — handing back a number
+  // that is already in use.
+  const rows = await prisma.$queryRawUnsafe<{ max: number | null }[]>(
+    `SELECT MAX(CAST(split_part("policyNumber", '-', 3) AS INTEGER)) AS max FROM "Policy"`
+  );
+  return rows[0]?.max ?? 0;
 }
 
 /**
@@ -36,20 +41,23 @@ export async function issuePolicyForQuote(quoteId: string, paymentId: string) {
     throw new Error(`Quote ${quoteId} has no associated user — cannot issue a policy`);
   }
 
-  const policyNumber = await generatePolicyNumber();
-
-  const policy = await prisma.policy.create({
-    data: {
-      policyNumber,
-      quoteId: quote.id,
-      userId: quote.userId,
-      status: "ISSUED",
-      startDate: quote.startDate,
-      endDate: quote.endDate,
-      issuedAt: new Date(),
-      paymentId,
-    },
-  });
+  const policy = await createWithUniqueNumber(
+    async () => nextSequenceFrom(await highestIssuedSequence()),
+    (policyNumber) =>
+      prisma.policy.create({
+        data: {
+          policyNumber,
+          quoteId: quote.id,
+          userId: quote.userId!,
+          status: "ISSUED",
+          startDate: quote.startDate,
+          endDate: quote.endDate,
+          issuedAt: new Date(),
+          paymentId,
+        },
+      })
+  );
+  const policyNumber = policy.policyNumber;
 
   await prisma.quote.update({ where: { id: quote.id }, data: { status: "CONVERTED" } });
   await logEvent("Policy", policy.id, "policy.issued", { policyNumber, quoteId: quote.id });
