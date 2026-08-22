@@ -17,6 +17,10 @@ export function VehicleConfirmPage() {
 
   if (!vehicle) return <Navigate to="/" replace />;
 
+  // The Irish register returns no vehicle category, so every lookup would
+  // otherwise default to "Car" and state something we do not actually know.
+  const typeIsKnown = vehicle.source !== "regcheck";
+
   return (
     <div className="space-y-6">
       <Stepper step={1} total={5} />
@@ -29,7 +33,7 @@ export function VehicleConfirmPage() {
       <Card>
         <div className="flex items-center gap-3 mb-6 pb-6 border-b border-ink/8">
           <div className="w-10 h-10 rounded-xl bg-mint/15 border border-mint/25 flex items-center justify-center text-lg">
-            {VEHICLE_TYPE_ICONS[vehicle.vehicleType] ?? "🚗"}
+            {typeIsKnown ? VEHICLE_TYPE_ICONS[vehicle.vehicleType] ?? "🚗" : "🚗"}
           </div>
           <div>
             <p className="font-display font-bold text-xl text-ink tracking-widest">{vehicle.registration}</p>
@@ -53,7 +57,9 @@ export function VehicleConfirmPage() {
           <dd className="text-ink font-medium">{vehicle.fuelType ?? "—"}</dd>
 
           <dt className="text-xs font-semibold text-ink/45 uppercase tracking-wider">Vehicle type</dt>
-          <dd className="text-ink font-medium">{VEHICLE_TYPE_LABELS[vehicle.vehicleType] ?? "—"}</dd>
+          <dd className="text-ink font-medium">
+            {typeIsKnown ? VEHICLE_TYPE_LABELS[vehicle.vehicleType] ?? "—" : "—"}
+          </dd>
         </dl>
 
         <div className="mt-8 flex gap-3">

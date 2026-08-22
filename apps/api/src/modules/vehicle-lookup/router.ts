@@ -9,12 +9,18 @@ export const vehicleLookupRouter = Router();
 vehicleLookupRouter.post("/", async (req, res) => {
   const parsed = vehicleLookupRequestSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: "Enter a valid UK registration number" });
+    const country = (req.body as { country?: string })?.country;
+    return res.status(400).json({
+      error:
+        country === "ie"
+          ? "Enter a valid Irish registration number, e.g. 161-D-12345"
+          : "Enter a valid UK registration number",
+    });
   }
-  const { registration } = parsed.data;
+  const { registration, country } = parsed.data;
 
   try {
-    const result = await getVehicleLookupProvider().lookup(registration);
+    const result = await getVehicleLookupProvider(country).lookup(registration);
 
     const vehicle = await prisma.vehicle.create({
       data: {

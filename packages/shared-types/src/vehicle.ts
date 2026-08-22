@@ -1,17 +1,71 @@
 import { z } from "zod";
 
+/** Which country's register a lookup should be run against. */
+export const lookupCountrySchema = z.enum(["uk", "ie"]);
+export type LookupCountry = z.infer<typeof lookupCountrySchema>;
+
+/**
+ * Strips the separators people naturally type. UK plates are commonly written
+ * "AB12 CDE" and Irish ones "161-D-12345"; neither separator is part of the
+ * registration itself.
+ */
+export function normalizeRegistration(raw: string): string {
+  return raw.trim().toUpperCase().replace(/[\s-]/g, "");
+}
+
 /** UK number plate formats (current 2001-style + older formats), case-insensitive. */
 export const ukRegistrationSchema = z
   .string()
-  .trim()
-  .toUpperCase()
-  .min(2)
-  .max(8)
-  .regex(/^[A-Z0-9]+$/, "Registration must only contain letters and numbers");
+  .transform(normalizeRegistration)
+  .pipe(
+    z
+      .string()
+      .min(2)
+      .max(8)
+      .regex(/^[A-Z0-9]+$/, "Registration must only contain letters and numbers")
+  );
 
-export const vehicleLookupRequestSchema = z.object({
-  registration: ukRegistrationSchema,
-});
+/**
+ * Irish format: two or three year digits (the third marks the half-year from
+ * 2013), a one or two letter county code, then a one to six digit sequence.
+ * Written "161-D-12345"; normalised here to "161D12345".
+ */
+export const irishRegistrationSchema = z
+  .string()
+  .transform(normalizeRegistration)
+  .pipe(
+    z
+      .string()
+      .regex(
+        /^\d{2,3}[A-Z]{1,2}\d{1,6}$/,
+        "Enter a valid Irish registration, e.g. 161-D-12345"
+      )
+  );
+
+/** Picks the right registration format for the country being searched. */
+export function registrationSchemaFor(country: LookupCountry) {
+  return country === "ie" ? irishRegistrationSchema : ukRegistrationSchema;
+}
+
+export const vehicleLookupRequestSchema = z
+  .object({
+    registration: z.string(),
+    country: lookupCountrySchema.default("uk"),
+  })
+  .superRefine((value, ctx) => {
+    const parsed = registrationSchemaFor(value.country).safeParse(value.registration);
+    if (!parsed.success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["registration"],
+        message: parsed.error.issues[0]?.message ?? "Invalid registration",
+      });
+    }
+  })
+  .transform((value) => ({
+    ...value,
+    registration: normalizeRegistration(value.registration),
+  }));
 export type VehicleLookupRequest = z.infer<typeof vehicleLookupRequestSchema>;
 
 export const vehicleLookupResultSchema = z.object({
@@ -22,7 +76,7 @@ export const vehicleLookupResultSchema = z.object({
   yearOfManufacture: z.number().int().optional(),
   fuelType: z.string().optional(),
   vehicleType: z.enum(["car", "van", "motorcycle", "hgv", "other"]).default("car"),
-  source: z.enum(["mock", "oneautoapi", "dvla", "checkcardetails"]),
+  source: z.enum(["mock", "oneautoapi", "dvla", "checkcardetails", "regcheck"]),
 });
 export type VehicleLookupResult = z.infer<typeof vehicleLookupResultSchema>;
 

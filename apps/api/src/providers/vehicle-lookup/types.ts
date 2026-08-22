@@ -26,6 +26,6 @@ export class ProviderNotConfiguredError extends Error {
  * change — see factory.ts.
  */
 export interface VehicleLookupProvider {
-  readonly name: "mock" | "oneautoapi" | "dvla" | "checkcardetails";
+  readonly name: "mock" | "oneautoapi" | "dvla" | "checkcardetails" | "regcheck";
   lookup(registration: string): Promise<VehicleLookupResult>;
 }

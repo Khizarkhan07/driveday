@@ -23,6 +23,8 @@ export const env = {
     | "dvla"
     | "checkcardetails",
   checkCarDetailsApiKey: process.env.CHECK_CAR_DETAILS_API_KEY ?? "652c5a55ef926ab5e5396ad9589ca84c",
+  // RegCheck authenticates with the username alone, passed in the query string.
+  regCheckUsername: process.env.REGCHECK_USERNAME ?? "daydrive",
   oneAutoApiBaseUrl: process.env.ONEAUTOAPI_BASE_URL,
   oneAutoApiKey: process.env.ONEAUTOAPI_KEY,
   dvlaVesBaseUrl:
