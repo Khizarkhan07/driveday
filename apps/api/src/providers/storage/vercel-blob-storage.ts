@@ -7,6 +7,10 @@ export class VercelBlobStorage implements DocumentStorage {
       access: "public",
       contentType,
       addRandomSuffix: false,
+      // Keys are deterministic (policies/{id}/{type}.pdf), so writing the same
+      // key means regenerating that exact document — reissuing a corrected
+      // certificate, say. Without this the SDK rejects the write outright.
+      allowOverwrite: true,
     });
     return url;
   }

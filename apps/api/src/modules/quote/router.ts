@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createQuoteRequestSchema, type VehicleType } from "@motorcover/shared-types";
+import { createQuoteRequestSchema } from "@motorcover/shared-types";
 import { prisma, logEvent } from "../../db/client";
 import { attachUser } from "../../middleware/require-auth";
 import { calculatePremium } from "./pricing";
@@ -28,7 +28,7 @@ quoteRouter.post("/", attachUser, async (req, res) => {
   const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
   const durationDays = 1;
 
-  const breakdown = calculatePremium({ vehicleType: vehicle.vehicleType as VehicleType });
+  const breakdown = calculatePremium({ coverType });
 
   const expiresAt = new Date(Date.now() + pricingConfig.quoteValidityHours * 60 * 60 * 1000);
 

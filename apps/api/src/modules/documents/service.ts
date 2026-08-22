@@ -81,9 +81,27 @@ async function loadPolicy(policyId: string): Promise<PolicyForDocs> {
   return policy;
 }
 
-function policyholderName(user: PolicyForDocs["user"]): string {
-  const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
-  return name || user.email;
+/**
+ * The name printed on the policy documents.
+ *
+ * Taken from the quote's driver details, NOT the account holder. The two are
+ * different people whenever someone buys cover for another driver, and the
+ * certificate must name the person entitled to drive — the licence number,
+ * date of birth and address printed alongside it all come from driverDetails,
+ * so taking the name from the account produced documents that mixed two
+ * identities. Falls back to the account only if the driver name is missing.
+ */
+export function policyholderName(
+  driverDetails: unknown,
+  user: PolicyForDocs["user"]
+): string {
+  // Names are free text, so collapse stray whitespace rather than printing
+  // "Dennis  Edwards" on a certificate.
+  const clean = (...parts: (string | null | undefined)[]) =>
+    parts.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+
+  const d = (driverDetails ?? {}) as { firstName?: string; lastName?: string };
+  return clean(d.firstName, d.lastName) || clean(user.firstName, user.lastName) || user.email;
 }
 
 function vehicleDescription(vehicle: PolicyForDocs["quote"]["vehicle"]): string {
@@ -126,7 +144,7 @@ export async function generatePolicyDocuments(
   policyId: string
 ): Promise<Array<{ type: DocumentType; id: string; buffer: Buffer; filename: string }>> {
   const policy = await loadPolicy(policyId);
-  const name = policyholderName(policy.user);
+  const name = policyholderName(policy.quote.driverDetails, policy.user);
   const vehicle = vehicleDescription(policy.quote.vehicle);
   const startDate = formatDate(policy.startDate);
   const endDate = formatDate(policy.endDate);

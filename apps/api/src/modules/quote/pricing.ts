@@ -1,8 +1,8 @@
-import type { PricingBreakdown, VehicleType } from "@motorcover/shared-types";
+import type { CoverType, PricingBreakdown } from "@motorcover/shared-types";
 import { pricingConfig as defaultConfig } from "./pricing.config";
 
 export interface PricingInput {
-  vehicleType: VehicleType;
+  coverType: CoverType;
 }
 
 export type PricingConfig = typeof defaultConfig;
@@ -11,7 +11,7 @@ export function calculatePremium(
   input: PricingInput,
   config: PricingConfig = defaultConfig
 ): PricingBreakdown {
-  const ratePence = resolveRate(input.vehicleType, config);
+  const ratePence = resolveRate(input.coverType, config);
 
   return {
     baseRatePence: ratePence,
@@ -27,10 +27,10 @@ export function calculatePremium(
 }
 
 /**
- * Falls back to the car rate for anything unrecognised. `vehicleType` is a
- * plain string in the database, so a row written before a type existed (or by
- * hand) can still reach this.
+ * Falls back to the personal rate for anything unrecognised. `coverType` is a
+ * plain string in the database, so a row written by hand — or before business
+ * cover existed — can still reach this, and must never fail a quote.
  */
-function resolveRate(vehicleType: VehicleType, config: PricingConfig): number {
-  return config.vehicleTypeRates[vehicleType] ?? config.vehicleTypeRates.car;
+function resolveRate(coverType: CoverType, config: PricingConfig): number {
+  return config.coverTypeRates[coverType] ?? config.coverTypeRates.PERSONAL;
 }
