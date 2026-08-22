@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,9 +13,17 @@ export function DriverDetailsPage() {
   const storedDriver = useBuyFlowStore((s) => s.driver);
   const setDriver = useBuyFlowStore((s) => s.setDriver);
 
+  // Only pre-tick when returning to a form they already submitted without a
+  // licence number; a first visit should ask for it normally.
+  const [withholdLicence, setWithholdLicence] = useState(
+    storedDriver ? !storedDriver.licenceNumber : false
+  );
+
   const {
     register,
     handleSubmit,
+    setValue,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<DriverDetails>({
     resolver: zodResolver(driverDetailsSchema),
@@ -83,9 +92,32 @@ export function DriverDetailsPage() {
           <div className="space-y-4">
             <Field
               label="Driving licence number"
+              disabled={withholdLicence}
+              placeholder={withholdLicence ? "Not provided" : undefined}
               {...register("licenceNumber")}
-              error={errors.licenceNumber?.message}
+              error={withholdLicence ? undefined : errors.licenceNumber?.message}
             />
+
+            <label className="flex items-start gap-2.5 cursor-pointer select-none -mt-1">
+              <input
+                type="checkbox"
+                checked={withholdLicence}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setWithholdLicence(checked);
+                  // Clear the field so a half-typed value cannot fail
+                  // validation while the field is disabled.
+                  if (checked) {
+                    setValue("licenceNumber", "");
+                    clearErrors("licenceNumber");
+                  }
+                }}
+                className="mt-0.5 w-4 h-4 rounded border-ink/25 accent-mint cursor-pointer shrink-0"
+              />
+              <span className="text-sm text-ink/70">
+                I&apos;d rather not share my licence number
+              </span>
+            </label>
             <Field
               label="Years held licence"
               type="number"

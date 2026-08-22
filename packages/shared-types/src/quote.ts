@@ -16,12 +16,19 @@ export const driverDetailsSchema = z.object({
   addressLine2: z.string().optional(),
   city: z.string().min(1),
   postcode: z.string().min(2),
+  /**
+   * Optional: the driver may decline to share it. When given it must still be
+   * a valid UK licence number — an empty string is treated as "not provided"
+   * rather than as a malformed value, so declining cannot fail validation.
+   */
   licenceNumber: z
     .string()
     .regex(
       /^[A-Z9]{5}\d{6}[A-Z9]{2}\d[A-Z]{2}$/i,
       "Enter a valid UK driving licence number (e.g. MORGA753116SM9IJ)"
-    ),
+    )
+    .optional()
+    .or(z.literal("")),
   yearsHeldLicence: z.number().int().min(0).max(80),
   hasConvictions: z.boolean(),
   hasClaims: z.boolean(),
