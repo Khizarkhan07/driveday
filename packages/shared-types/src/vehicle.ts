@@ -68,6 +68,9 @@ export const vehicleLookupRequestSchema = z
   }));
 export type VehicleLookupRequest = z.infer<typeof vehicleLookupRequestSchema>;
 
+/** The vehicle categories we recognise, shared by lookups and manual entry. */
+export const vehicleTypeSchema = z.enum(["car", "van", "motorcycle", "hgv", "other"]);
+
 export const vehicleLookupResultSchema = z.object({
   registration: z.string(),
   make: z.string(),
@@ -75,12 +78,77 @@ export const vehicleLookupResultSchema = z.object({
   colour: z.string().optional(),
   yearOfManufacture: z.number().int().optional(),
   fuelType: z.string().optional(),
-  vehicleType: z.enum(["car", "van", "motorcycle", "hgv", "other"]).default("car"),
-  source: z.enum(["mock", "oneautoapi", "dvla", "checkcardetails", "regcheck"]),
+  vehicleType: vehicleTypeSchema.default("car"),
+  source: z.enum(["mock", "oneautoapi", "dvla", "checkcardetails", "regcheck", "manual"]),
 });
 export type VehicleLookupResult = z.infer<typeof vehicleLookupResultSchema>;
 
 export type VehicleType = VehicleLookupResult["vehicleType"];
+
+/**
+ * Fuel types offered on the manual entry form. A fixed list rather than free
+ * text so manually entered vehicles report and print alongside looked-up ones
+ * instead of accumulating spellings of "petrol".
+ */
+export const FUEL_TYPES = [
+  "Petrol",
+  "Diesel",
+  "Hybrid",
+  "Plug-in hybrid",
+  "Electric",
+  "Other",
+] as const;
+export type FuelType = (typeof FUEL_TYPES)[number];
+
+/** Cars predate registration, but not by enough to make an earlier year plausible. */
+const EARLIEST_YEAR_OF_MANUFACTURE = 1900;
+
+/**
+ * Manual entry is the fallback for a registration no provider can resolve —
+ * in practice a car new enough that it hasn't reached the registers yet.
+ *
+ * Every field the lookup would have filled in is required here: an absent
+ * make or colour on a looked-up vehicle means "the register didn't say", but
+ * on a manual entry it would only mean the customer skipped it, and these
+ * details identify the vehicle on the Certificate of Insurance. Nothing in
+ * this entry is verified, so `detailsDeclared` records that the customer
+ * confirmed it is accurate.
+ */
+const nonEmptyText = z.string().trim().min(1);
+
+export const manualVehicleEntrySchema = z
+  .object({
+    registration: z.string(),
+    country: lookupCountrySchema.default("uk"),
+    make: nonEmptyText,
+    model: nonEmptyText,
+    colour: nonEmptyText,
+    // Plates for the next calendar year are issued ahead of it, so a vehicle
+    // may legitimately be a year newer than today's date.
+    yearOfManufacture: z
+      .number()
+      .int()
+      .min(EARLIEST_YEAR_OF_MANUFACTURE)
+      .max(new Date().getFullYear() + 1),
+    fuelType: z.enum(FUEL_TYPES),
+    vehicleType: vehicleTypeSchema,
+    detailsDeclared: z.literal(true),
+  })
+  .superRefine((value, ctx) => {
+    const parsed = registrationSchemaFor(value.country).safeParse(value.registration);
+    if (!parsed.success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["registration"],
+        message: parsed.error.issues[0]?.message ?? "Invalid registration",
+      });
+    }
+  })
+  .transform((value) => ({
+    ...value,
+    registration: normalizeRegistration(value.registration),
+  }));
+export type ManualVehicleEntry = z.infer<typeof manualVehicleEntrySchema>;
 
 export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
   car: "Car",

@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { LandingPage } from "./pages/LandingPage";
 import { VehicleConfirmPage } from "./pages/VehicleConfirmPage";
+import { ManualVehiclePage } from "./pages/ManualVehiclePage";
 import { CoverDetailsPage } from "./pages/CoverDetailsPage";
 import { DriverDetailsPage } from "./pages/DriverDetailsPage";
 import { QuotePage } from "./pages/QuotePage";
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { path: "/vehicle-confirm", element: <VehicleConfirmPage /> },
+      { path: "/vehicle-manual", element: <ManualVehiclePage /> },
       { path: "/cover-details", element: <CoverDetailsPage /> },
       { path: "/driver-details", element: <DriverDetailsPage /> },
       { path: "/quote", element: <QuotePage /> },

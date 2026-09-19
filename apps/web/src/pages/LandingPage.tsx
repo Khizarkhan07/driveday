@@ -28,6 +28,9 @@ export function LandingPage() {
   const coverType = useBuyFlowStore((s) => s.coverType);
   const setCoverType = useBuyFlowStore((s) => s.setCoverType);
   const [validationError, setValidationError] = useState<string | null>(null);
+  // The normalised reg the last lookup used — what manual entry must describe,
+  // rather than whatever is currently half-typed in the box.
+  const [lastSearched, setLastSearched] = useState("");
   const { data } = useCurrentUser();
   const logout = useLogout();
   const user = data?.user;
@@ -56,6 +59,7 @@ export function LandingPage() {
     const schema = isIrish ? irishRegistrationSchema : ukRegistrationSchema;
     const parsed = schema.safeParse(registration);
     if (!parsed.success) { setValidationError(parsed.error.issues[0]?.message ?? "Enter a valid registration"); return; }
+    setLastSearched(parsed.data);
     lookup.mutate(parsed.data);
   }
 
@@ -220,9 +224,28 @@ export function LandingPage() {
               </button>
 
               {lookup.isError && (
-                <p className="mt-2 text-center text-xs text-red-500">
-                  {lookup.error instanceof ApiError ? lookup.error.message : "Something went wrong looking up that vehicle."}
-                </p>
+                <>
+                  <p className="mt-2 text-center text-xs text-red-500">
+                    {lookup.error instanceof ApiError ? lookup.error.message : "Something went wrong looking up that vehicle."}
+                  </p>
+                  {/* Offered only when the register genuinely has no record of
+                      the plate. A provider outage is our problem to fix, not
+                      something to hand to the customer as a form. */}
+                  {lookup.error instanceof ApiError && lookup.error.code === "VEHICLE_NOT_FOUND" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        reset();
+                        navigate(
+                          `/vehicle-manual?reg=${encodeURIComponent(lastSearched)}&country=${isIrish ? "ie" : "uk"}`
+                        );
+                      }}
+                      className="mt-2 w-full rounded-xl border border-ink/15 bg-white text-ink font-bold py-3 text-sm hover:bg-ink/5 transition"
+                    >
+                      Enter your vehicle details manually →
+                    </button>
+                  )}
+                </>
               )}
               <p className="mt-2.5 text-center text-xs text-ink/50">Cover starts the minute you choose · Documents emailed instantly</p>
             </form>

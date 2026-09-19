@@ -32,7 +32,7 @@ interface PolicyDetail {
     totalPence: number;
     durationDays: number;
     driverDetails: Record<string, unknown>;
-    vehicle: { registration: string; make: string | null; model: string | null; colour: string | null; yearOfManufacture: number | null };
+    vehicle: { registration: string; make: string | null; model: string | null; colour: string | null; yearOfManufacture: number | null; source: string };
   };
   payment: { id: string; stripePaymentIntentId: string; amountPence: number; status: string } | null;
   documents: { id: string; type: string; storageKey: string }[];
@@ -99,7 +99,14 @@ export function AdminPolicyDetailPage() {
 
         <Card>
           <h2 className="text-xs text-ink/45 uppercase tracking-wider font-semibold mb-3">Vehicle</h2>
-          <p className="text-ink font-semibold">{policy.quote.vehicle.registration}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-ink font-semibold">{policy.quote.vehicle.registration}</p>
+            {/* No register confirmed this vehicle exists as described — it
+                matters when assessing a claim, so it is stated up front. */}
+            {policy.quote.vehicle.source === "manual" ? (
+              <Badge tone="warning">Self-declared</Badge>
+            ) : null}
+          </div>
           <p className="text-ink/55 text-sm">
             {policy.quote.vehicle.make} {policy.quote.vehicle.model}
             {policy.quote.vehicle.colour ? ` · ${policy.quote.vehicle.colour}` : ""}

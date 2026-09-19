@@ -9,9 +9,17 @@ export const sessionToken = {
 
 export class ApiError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  /**
+   * Machine-readable error identifier where the API sends one (e.g.
+   * "VEHICLE_NOT_FOUND"). Status alone isn't enough to branch on: a 404 from a
+   * register that has never heard of a plate needs different handling from a
+   * 404 caused by anything else.
+   */
+  code?: string;
+  constructor(status: number, message: string, code?: string) {
     super(message);
     this.status = status;
+    this.code = code;
     this.name = "ApiError";
   }
 }
@@ -30,13 +38,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     let message = res.statusText;
+    let code: string | undefined;
     try {
       const body = await res.json();
       message = body.error ?? message;
+      code = body.code;
     } catch {
       // response had no JSON body — fall back to statusText
     }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, code);
   }
 
   if (res.status === 204) return undefined as T;

@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { VEHICLE_TYPE_LABELS } from "@motorcover/shared-types";
 import { useBuyFlowStore } from "../lib/buy-flow-store";
-import { Button, Card, Stepper } from "../components/ui";
+import { Banner, Button, Card, Stepper } from "../components/ui";
 
 const VEHICLE_TYPE_ICONS: Record<string, string> = {
   car: "🚗",
@@ -20,6 +20,13 @@ export function VehicleConfirmPage() {
   // The Irish register returns no vehicle category, so every lookup would
   // otherwise default to "Car" and state something we do not actually know.
   const typeIsKnown = vehicle.source !== "regcheck";
+
+  // A manual entry was never checked against a register, so the usual "is this
+  // your vehicle?" reassurance doesn't apply — these are the customer's own
+  // words being read back to them.
+  const isSelfDeclared = vehicle.source === "manual";
+
+  const editHref = `/vehicle-manual?reg=${encodeURIComponent(vehicle.registration)}`;
 
   return (
     <div className="space-y-6">
@@ -62,12 +69,27 @@ export function VehicleConfirmPage() {
           </dd>
         </dl>
 
+        {isSelfDeclared ? (
+          <div className="mt-6">
+            <Banner tone="warning">
+              You entered these details yourself — we couldn't find this
+              registration on the vehicle register. Check them carefully, as
+              they'll appear on your Certificate of Insurance.
+            </Banner>
+          </div>
+        ) : null}
+
         <div className="mt-8 flex gap-3">
           <Button onClick={() => navigate("/cover-details")}>
             Yes, that's my vehicle →
           </Button>
-          <Button variant="secondary" onClick={() => navigate("/")}>
-            Search again
+          <Button
+            variant="secondary"
+            onClick={() =>
+              navigate(isSelfDeclared ? editHref : "/")
+            }
+          >
+            {isSelfDeclared ? "Edit details" : "Search again"}
           </Button>
         </div>
       </Card>

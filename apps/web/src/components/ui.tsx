@@ -1,5 +1,10 @@
 import { forwardRef } from "react";
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
+import type {
+  ButtonHTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+} from "react";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
@@ -39,6 +44,27 @@ export const Field = forwardRef<
         className="w-full rounded-xl bg-white border border-ink/15 px-4 py-3 text-sm text-ink placeholder:text-ink/35 focus:outline-none focus:ring-2 focus:ring-mint focus:border-mint transition"
         {...props}
       />
+      {error ? <span className="block text-xs text-red-500 mt-1.5">{error}</span> : null}
+    </label>
+  );
+});
+
+export const Select = forwardRef<
+  HTMLSelectElement,
+  SelectHTMLAttributes<HTMLSelectElement> & { label: string; error?: string }
+>(function Select({ label, error, children, ...props }, ref) {
+  return (
+    <label className="block">
+      <span className="block text-xs font-semibold text-ink/50 uppercase tracking-wider mb-1.5">
+        {label}
+      </span>
+      <select
+        ref={ref}
+        className="w-full rounded-xl bg-white border border-ink/15 px-4 py-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-mint focus:border-mint transition"
+        {...props}
+      >
+        {children}
+      </select>
       {error ? <span className="block text-xs text-red-500 mt-1.5">{error}</span> : null}
     </label>
   );
