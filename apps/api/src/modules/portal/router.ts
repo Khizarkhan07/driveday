@@ -127,6 +127,7 @@ portalRouter.post("/policies/:id/resend-email", async (req, res) => {
       startDate: policy.quote.startDate.toISOString(),
       endDate: policy.quote.endDate.toISOString(),
       totalPence: policy.quote.totalPence,
+      currency: policy.quote.currency,
       portalUrl: `${env.appBaseUrl}/portal/policies/${policy.id}`,
     }),
     attachments,

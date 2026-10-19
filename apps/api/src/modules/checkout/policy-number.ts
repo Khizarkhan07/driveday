@@ -15,13 +15,29 @@
 
 const YEAR_PREFIX = 2023;
 
-export function formatPolicyNumber(sequence: number): string {
-  return `Policy-${YEAR_PREFIX}-${String(sequence).padStart(6, "0")}`;
+/**
+ * Formats a policy number, optionally scoped to a market.
+ *
+ * Each market has its own database, so without a prefix both would
+ * independently issue `Policy-2023-000001`. The unique constraint is per
+ * database and would not notice. `null` keeps the original format, which live
+ * UK policies carry and which must not change.
+ */
+export function formatPolicyNumber(sequence: number, marketPrefix?: string | null): string {
+  const prefix = marketPrefix ? `${marketPrefix}-` : "";
+  return `Policy-${prefix}${YEAR_PREFIX}-${String(sequence).padStart(6, "0")}`;
 }
 
-/** Reads the trailing sequence out of a policy number; 0 if unparseable. */
+/**
+ * Reads the trailing sequence out of a policy number; 0 if unparseable.
+ *
+ * Takes the last segment rather than a fixed position, because a market prefix
+ * shifts every segment after it — reading index 2 of `Policy-IE-2023-000001`
+ * returns the year.
+ */
 export function parsePolicySequence(policyNumber: string): number {
-  const parsed = Number(policyNumber.split("-")[2]);
+  const segments = policyNumber.split("-");
+  const parsed = Number(segments[segments.length - 1]);
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
@@ -46,19 +62,23 @@ function isPolicyNumberCollision(err: unknown): boolean {
 export async function createWithUniqueNumber<T>(
   nextSequence: () => Promise<number>,
   create: (policyNumber: string) => Promise<T>,
-  attempts = 5
+  attempts = 5,
+  marketPrefix?: string | null
 ): Promise<T> {
   const start = await nextSequence();
 
   for (let i = 0; i < attempts; i++) {
     try {
-      return await create(formatPolicyNumber(start + i));
+      return await create(formatPolicyNumber(start + i, marketPrefix));
     } catch (err) {
       if (!isPolicyNumberCollision(err)) throw err;
     }
   }
 
   throw new Error(
-    `Could not allocate a unique policy number after ${attempts} attempts (from ${formatPolicyNumber(start)})`
+    `Could not allocate a unique policy number after ${attempts} attempts (from ${formatPolicyNumber(
+      start,
+      marketPrefix
+    )})`
   );
 }

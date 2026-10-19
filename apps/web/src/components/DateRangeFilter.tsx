@@ -5,14 +5,10 @@ import {
   type DateRangePreset,
 } from "@motorcover/shared-types";
 import { useAdminFilterStore } from "../lib/admin-filter-store";
+import { formatDate } from "../lib/market";
 
 function fmt(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "Europe/London",
-  });
+  return formatDate(iso, { day: "numeric", month: "short", year: "numeric" });
 }
 
 /**

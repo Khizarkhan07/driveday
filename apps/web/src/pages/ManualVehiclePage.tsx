@@ -4,15 +4,14 @@ import { useMutation } from "@tanstack/react-query";
 import {
   FUEL_TYPES,
   VEHICLE_TYPE_LABELS,
-  manualVehicleEntrySchema,
+  manualVehicleEntrySchemaFor,
   registrationSchemaFor,
-  ukRegistrationSchema,
-  type LookupCountry,
   type VehicleLookupResult,
   type VehicleType,
 } from "@motorcover/shared-types";
 import { api, ApiError } from "../lib/api";
 import { useBuyFlowStore } from "../lib/buy-flow-store";
+import { market } from "../lib/market";
 import { Banner, Button, Card, Field, Select, Stepper } from "../components/ui";
 
 const VEHICLE_TYPES = Object.keys(VEHICLE_TYPE_LABELS) as VehicleType[];
@@ -27,19 +26,6 @@ const EMPTY_FORM = {
 };
 
 /**
- * Which register the plate was searched against. Normally it's in the URL,
- * put there by the landing page. Coming back here to edit an entry it isn't,
- * so fall back to the format the plate matches — and prefer UK where both fit
- * (an 8-character Irish plate is also a valid UK one), since the only thing
- * that turns on it is which format the reg is validated against, and the reg
- * is fixed by then.
- */
-function resolveCountry(param: string | null, registration: string): LookupCountry {
-  if (param === "ie" || param === "uk") return param;
-  return ukRegistrationSchema.safeParse(registration).success ? "uk" : "ie";
-}
-
-/**
  * Reached only when a lookup came back VEHICLE_NOT_FOUND — typically a car too
  * new to have reached the register yet. The registration travels in the query
  * string rather than component state so a refresh mid-form doesn't strand the
@@ -51,7 +37,9 @@ export function ManualVehiclePage() {
   const setVehicle = useBuyFlowStore((s) => s.setVehicle);
 
   const registration = params.get("reg") ?? "";
-  const country = resolveCountry(params.get("country"), registration);
+  // The register is fixed by this deployment's market, not inferred from the
+  // plate's shape or carried in the URL.
+  const country = market.country;
 
   // Returning here from the confirm page to correct something should show what
   // was entered, not an empty form.
@@ -97,7 +85,7 @@ export function ManualVehiclePage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const parsed = manualVehicleEntrySchema.safeParse({
+    const parsed = manualVehicleEntrySchemaFor(market).safeParse({
       registration,
       country,
       ...form,

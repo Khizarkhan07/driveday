@@ -21,6 +21,7 @@ async function downloadDocument(docId: string, filename: string) {
 }
 import { useState } from "react";
 import { Badge, Button, Card } from "../components/ui";
+import { formatDateTime, money } from "../lib/market";
 
 interface PolicyDetailResponse {
   policy: {
@@ -52,9 +53,6 @@ const DOCUMENT_ICONS: Record<DocumentType, string> = {
   TERMS_OF_BUSINESS: "📝",
 };
 
-function money(pence: number): string {
-  return `£${(pence / 100).toFixed(2)}`;
-}
 
 export function PortalPolicyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -132,13 +130,13 @@ export function PortalPolicyDetailPage() {
               <div>
                 <dt className="text-xs text-ink/45 mb-1">Cover starts</dt>
                 <dd className="text-ink font-medium">
-                  {new Date(policy.startDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
+                  {formatDateTime(policy.startDate)}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs text-ink/45 mb-1">Cover ends</dt>
                 <dd className="text-ink font-medium">
-                  {new Date(policy.endDate).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
+                  {formatDateTime(policy.endDate)}
                 </dd>
               </div>
               <div>
@@ -149,7 +147,7 @@ export function PortalPolicyDetailPage() {
                 <dt className="text-xs text-ink/45 mb-1">Issued</dt>
                 <dd className="text-ink font-medium">
                   {policy.issuedAt
-                    ? new Date(policy.issuedAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })
+                    ? formatDateTime(policy.issuedAt)
                     : "Pending"}
                 </dd>
               </div>

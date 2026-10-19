@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { Card } from "../../components/ui";
+import { formatDateTime } from "../../lib/market";
 
 interface EventRow {
   id: string;
@@ -20,7 +21,7 @@ interface EventsResponse {
 }
 
 function fmtDate(d: string) {
-  return new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London" });
+  return formatDateTime(d);
 }
 
 const ENTITY_TYPES = ["", "User", "Policy", "Payment", "Quote"];

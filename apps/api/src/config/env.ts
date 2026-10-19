@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { resolveMarket } from "@motorcover/shared-types";
 
 function required(name: string, fallback?: string): string {
   const value = process.env[name] ?? fallback;
@@ -11,6 +12,13 @@ function required(name: string, fallback?: string): string {
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: Number(process.env.PORT ?? 4000),
+
+  /**
+   * Which market this deployment serves. Deliberately has no fallback: the
+   * other values below do, so a half-configured deployment would otherwise
+   * boot happily and serve the wrong currency, register and plate format.
+   */
+  market: resolveMarket(process.env.MARKET),
   appBaseUrl: required("APP_BASE_URL", "http://localhost:5173"),
   apiBaseUrl: required("API_BASE_URL", "http://localhost:4000"),
 

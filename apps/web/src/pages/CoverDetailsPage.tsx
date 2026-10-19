@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useBuyFlowStore } from "../lib/buy-flow-store";
 import { Banner, Button, Card, Field, Stepper } from "../components/ui";
+import { formatDateTime } from "../lib/market";
 
 function defaultStart(): string {
   const d = new Date(Date.now() + 60 * 60 * 1000);
@@ -81,13 +82,13 @@ export function CoverDetailsPage() {
                 <div>
                   <p className="text-ink/45 text-xs">Starts</p>
                   <p className="text-ink font-medium">
-                    {new Date(start).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
+                    {formatDateTime(start)}
                   </p>
                 </div>
                 <div>
                   <p className="text-ink/45 text-xs">Ends (24 hrs)</p>
                   <p className="text-ink font-medium">
-                    {previewEnd.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/London" })}
+                    {formatDateTime(previewEnd)}
                   </p>
                 </div>
               </div>

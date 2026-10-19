@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { MarketConfig } from "./market";
 
 /** Which country's register a lookup should be run against. */
 export const lookupCountrySchema = z.enum(["uk", "ie"]);
@@ -68,6 +69,35 @@ export const vehicleLookupRequestSchema = z
   }));
 export type VehicleLookupRequest = z.infer<typeof vehicleLookupRequestSchema>;
 
+/**
+ * A lookup request scoped to one market.
+ *
+ * The country is taken from the deployment's configuration and any `country`
+ * in the request body is ignored: the web form is not the only caller, and a
+ * market must not be talked into querying the other country's register. The
+ * resolved country is reported on the output so the caller need not re-derive
+ * it.
+ */
+export function vehicleLookupRequestSchemaFor(market: MarketConfig) {
+  return z
+    .object({ registration: z.string() })
+    .passthrough()
+    .superRefine((value, ctx) => {
+      const parsed = registrationSchemaFor(market.country).safeParse(value.registration);
+      if (!parsed.success) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["registration"],
+          message: market.registrationErrorMessage,
+        });
+      }
+    })
+    .transform((value) => ({
+      registration: normalizeRegistration(value.registration),
+      country: market.country,
+    }));
+}
+
 /** The vehicle categories we recognise, shared by lookups and manual entry. */
 export const vehicleTypeSchema = z.enum(["car", "van", "motorcycle", "hgv", "other"]);
 
@@ -116,23 +146,28 @@ const EARLIEST_YEAR_OF_MANUFACTURE = 1900;
  */
 const nonEmptyText = z.string().trim().min(1);
 
+/** The vehicle details themselves, identical in every market. */
+const manualVehicleFields = {
+  registration: z.string(),
+  make: nonEmptyText,
+  model: nonEmptyText,
+  colour: nonEmptyText,
+  // Plates for the next calendar year are issued ahead of it, so a vehicle
+  // may legitimately be a year newer than today's date.
+  yearOfManufacture: z
+    .number()
+    .int()
+    .min(EARLIEST_YEAR_OF_MANUFACTURE)
+    .max(new Date().getFullYear() + 1),
+  fuelType: z.enum(FUEL_TYPES),
+  vehicleType: vehicleTypeSchema,
+  detailsDeclared: z.literal(true),
+};
+
 export const manualVehicleEntrySchema = z
   .object({
-    registration: z.string(),
+    ...manualVehicleFields,
     country: lookupCountrySchema.default("uk"),
-    make: nonEmptyText,
-    model: nonEmptyText,
-    colour: nonEmptyText,
-    // Plates for the next calendar year are issued ahead of it, so a vehicle
-    // may legitimately be a year newer than today's date.
-    yearOfManufacture: z
-      .number()
-      .int()
-      .min(EARLIEST_YEAR_OF_MANUFACTURE)
-      .max(new Date().getFullYear() + 1),
-    fuelType: z.enum(FUEL_TYPES),
-    vehicleType: vehicleTypeSchema,
-    detailsDeclared: z.literal(true),
   })
   .superRefine((value, ctx) => {
     const parsed = registrationSchemaFor(value.country).safeParse(value.registration);
@@ -148,6 +183,43 @@ export const manualVehicleEntrySchema = z
     ...value,
     registration: normalizeRegistration(value.registration),
   }));
+
+/**
+ * Manual entry scoped to one market. As with lookups, the country comes from
+ * the deployment's configuration rather than the request body, so a manual
+ * entry cannot introduce a vehicle from the other country's register.
+ */
+export function manualVehicleEntrySchemaFor(market: MarketConfig) {
+  return z
+    .object(manualVehicleFields)
+    .passthrough()
+    .superRefine((value, ctx) => {
+      const parsed = registrationSchemaFor(market.country).safeParse(value.registration);
+      if (!parsed.success) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["registration"],
+          message: market.registrationErrorMessage,
+        });
+      }
+    })
+    .transform((value) => {
+      const { make, model, colour, yearOfManufacture, fuelType, vehicleType, detailsDeclared } =
+        value;
+      return {
+        registration: normalizeRegistration(value.registration),
+        country: market.country,
+        make,
+        model,
+        colour,
+        yearOfManufacture,
+        fuelType,
+        vehicleType,
+        detailsDeclared,
+      };
+    });
+}
+
 export type ManualVehicleEntry = z.infer<typeof manualVehicleEntrySchema>;
 
 export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {

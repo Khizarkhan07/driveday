@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { createQuoteRequestSchema } from "@motorcover/shared-types";
+import { createQuoteRequestSchemaFor } from "@motorcover/shared-types";
+import { env } from "../../config/env";
 import { prisma, logEvent } from "../../db/client";
 import { attachUser } from "../../middleware/require-auth";
 import { calculatePremium } from "./pricing";
@@ -8,7 +9,7 @@ import { pricingConfig } from "./pricing.config";
 export const quoteRouter = Router();
 
 quoteRouter.post("/", attachUser, async (req, res) => {
-  const parsed = createQuoteRequestSchema.safeParse(req.body);
+  const parsed = createQuoteRequestSchemaFor(env.market).safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid input", details: parsed.error.flatten() });
   }
@@ -28,7 +29,7 @@ quoteRouter.post("/", attachUser, async (req, res) => {
   const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
   const durationDays = 1;
 
-  const breakdown = calculatePremium({ coverType });
+  const breakdown = calculatePremium({ coverType }, env.market);
 
   const expiresAt = new Date(Date.now() + pricingConfig.quoteValidityHours * 60 * 60 * 1000);
 

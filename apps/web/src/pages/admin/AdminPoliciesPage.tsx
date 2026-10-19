@@ -5,6 +5,7 @@ import { api } from "../../lib/api";
 import { Badge, Card } from "../../components/ui";
 import { DateRangeFilter } from "../../components/DateRangeFilter";
 import { rangeQuery, useAdminFilterStore } from "../../lib/admin-filter-store";
+import { formatDate, money } from "../../lib/market";
 
 interface PolicyRow {
   id: string;
@@ -29,10 +30,9 @@ interface PoliciesResponse {
   pages: number;
 }
 
-function money(pence: number) { return `£${(pence / 100).toFixed(2)}`; }
 function fmtDate(d: string | null) {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-GB", { timeZone: "Europe/London" });
+  return formatDate(d);
 }
 
 function statusTone(s: string): "success" | "warning" | "neutral" {

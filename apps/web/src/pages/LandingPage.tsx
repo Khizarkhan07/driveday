@@ -4,18 +4,22 @@ import { useMutation } from "@tanstack/react-query";
 import {
   BUSINESS_COVER_PLATFORMS,
   COVER_TYPE_LABELS,
-  irishRegistrationSchema,
-  ukRegistrationSchema,
+  registrationSchemaFor,
   type VehicleLookupResult,
 } from "@motorcover/shared-types";
 import { api, ApiError } from "../lib/api";
+import { market, money } from "../lib/market";
 import { useBuyFlowStore } from "../lib/buy-flow-store";
 import { useCurrentUser, useLogout } from "../lib/auth";
 
-/** Advertised 1-day rates, cheapest first. Mirrors the API pricing config. */
+/**
+ * Advertised 1-day rates, cheapest first. Read from the market config rather
+ * than restated here, so the headline price cannot drift from what the API
+ * actually charges.
+ */
 const PRICE_LIST = [
-  { label: "Personal", price: "£15" },
-  { label: "Business", price: "£25" },
+  { label: COVER_TYPE_LABELS.PERSONAL, price: money(market.coverTypeRates.PERSONAL) },
+  { label: COVER_TYPE_LABELS.BUSINESS, price: money(market.coverTypeRates.BUSINESS) },
 ];
 const FROM_PRICE = PRICE_LIST[0].price;
 
@@ -24,7 +28,6 @@ export function LandingPage() {
   const setVehicle = useBuyFlowStore((s) => s.setVehicle);
   const reset = useBuyFlowStore((s) => s.reset);
   const [registration, setRegistration] = useState("");
-  const [isIrish, setIsIrish] = useState(false);
   const coverType = useBuyFlowStore((s) => s.coverType);
   const setCoverType = useBuyFlowStore((s) => s.setCoverType);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -46,9 +49,10 @@ export function LandingPage() {
 
   const lookup = useMutation({
     mutationFn: (reg: string) =>
+      // No country is sent: the API resolves it from its own configured
+      // market and ignores anything the client claims.
       api.post<{ vehicle: VehicleLookupResult & { id: string } }>("/vehicle-lookup", {
         registration: reg,
-        country: isIrish ? "ie" : "uk",
       }),
     onSuccess: ({ vehicle }) => { reset(); setVehicle(vehicle); navigate("/vehicle-confirm"); },
   });
@@ -56,8 +60,7 @@ export function LandingPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setValidationError(null);
-    const schema = isIrish ? irishRegistrationSchema : ukRegistrationSchema;
-    const parsed = schema.safeParse(registration);
+    const parsed = registrationSchemaFor(market.country).safeParse(registration);
     if (!parsed.success) { setValidationError(parsed.error.issues[0]?.message ?? "Enter a valid registration"); return; }
     setLastSearched(parsed.data);
     lookup.mutate(parsed.data);
@@ -184,34 +187,22 @@ export function LandingPage() {
                 </p>
               )}
 
-              {/* UK number plate */}
-              <div style={{ display:"flex", alignItems:"stretch", overflow:"hidden", background:"#ffd80a", borderRadius:"9px", boxShadow:"inset 0 0 0 2px rgba(0,0,0,.18), 0 14px 34px -12px rgba(11,12,30,.4)" }}>
-                <div style={{ background:"#063298", color:"#fff", width:"38px", flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"4px", fontWeight:800, fontSize:"11px", letterSpacing:".05em" }}>
-                  <span style={{ color:"#ffd80a", fontSize:"9px", lineHeight:1 }}>★</span>
-                  UK
+              {/* Number plate, in this market's national style */}
+              <div style={{ display:"flex", alignItems:"stretch", overflow:"hidden", background:market.plate.background, borderRadius:"9px", boxShadow:"inset 0 0 0 2px rgba(0,0,0,.18), 0 14px 34px -12px rgba(11,12,30,.4)" }}>
+                <div style={{ background:market.plate.badgeBackground, color:"#fff", width:"38px", flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"4px", fontWeight:800, fontSize:"11px", letterSpacing:".05em" }}>
+                  <span style={{ color:market.plate.badgeColor, fontSize:"9px", lineHeight:1 }}>★</span>
+                  {market.plate.badgeLabel}
                 </div>
                 <input
                   value={registration}
                   onChange={(e) => setRegistration(e.target.value.toUpperCase())}
-                  placeholder={isIrish ? "161-D-12345" : "AB12 CDE"}
-                  maxLength={isIrish ? 12 : 8}
+                  placeholder={market.registrationPlaceholder}
+                  maxLength={market.registrationMaxLength}
                   autoComplete="off"
                   aria-label="Vehicle registration"
                   style={{ background:"transparent", border:"none", outline:"none", width:"100%", padding:"14px 8px", textAlign:"center", textTransform:"uppercase", color:"#111", fontFamily:'"Clash Display", system-ui, sans-serif', fontWeight:700, fontSize:"2.1rem", letterSpacing:"0.1em" }}
                 />
               </div>
-
-              <label className="mt-3 flex items-center gap-2.5 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={isIrish}
-                  onChange={(e) => { setIsIrish(e.target.checked); setValidationError(null); }}
-                  className="w-4 h-4 rounded border-ink/25 text-mint focus:ring-mint accent-mint cursor-pointer"
-                />
-                <span className="text-sm text-ink/70">
-                  This is an Irish registration
-                </span>
-              </label>
 
               {validationError && <p className="text-xs text-red-500 mt-1.5 text-center">{validationError}</p>}
 
@@ -237,7 +228,7 @@ export function LandingPage() {
                       onClick={() => {
                         reset();
                         navigate(
-                          `/vehicle-manual?reg=${encodeURIComponent(lastSearched)}&country=${isIrish ? "ie" : "uk"}`
+                          `/vehicle-manual?reg=${encodeURIComponent(lastSearched)}`
                         );
                       }}
                       className="mt-2 w-full rounded-xl border border-ink/15 bg-white text-ink font-bold py-3 text-sm hover:bg-ink/5 transition"

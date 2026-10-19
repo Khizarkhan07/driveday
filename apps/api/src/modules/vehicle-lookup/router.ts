@@ -1,8 +1,9 @@
 import { Router } from "express";
 import {
-  manualVehicleEntrySchema,
-  vehicleLookupRequestSchema,
+  manualVehicleEntrySchemaFor,
+  vehicleLookupRequestSchemaFor,
 } from "@motorcover/shared-types";
+import { env } from "../../config/env";
 import { prisma } from "../../db/client";
 import { getVehicleLookupProvider } from "../../providers/vehicle-lookup/factory";
 import { VehicleNotFoundError } from "../../providers/vehicle-lookup/types";
@@ -11,15 +12,11 @@ import { buildManualVehicleRecord } from "./manual-entry";
 export const vehicleLookupRouter = Router();
 
 vehicleLookupRouter.post("/", async (req, res) => {
-  const parsed = vehicleLookupRequestSchema.safeParse(req.body);
+  const parsed = vehicleLookupRequestSchemaFor(env.market).safeParse(req.body);
   if (!parsed.success) {
-    const country = (req.body as { country?: string })?.country;
-    return res.status(400).json({
-      error:
-        country === "ie"
-          ? "Enter a valid Irish registration number, e.g. 161-D-12345"
-          : "Enter a valid UK registration number",
-    });
+    // The market decides which register we query, so it also decides the
+    // wording. A client-supplied country is deliberately not consulted.
+    return res.status(400).json({ error: env.market.registrationErrorMessage });
   }
   const { registration, country } = parsed.data;
 
@@ -67,7 +64,7 @@ vehicleLookupRouter.post("/", async (req, res) => {
  * requires every field and an explicit declaration.
  */
 vehicleLookupRouter.post("/manual", async (req, res) => {
-  const parsed = manualVehicleEntrySchema.safeParse(req.body);
+  const parsed = manualVehicleEntrySchemaFor(env.market).safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({
       error: parsed.error.issues[0]?.message ?? "Check the vehicle details and try again",

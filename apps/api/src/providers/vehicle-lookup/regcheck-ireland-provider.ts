@@ -42,6 +42,29 @@ export function unwrap(value: RegCheckValue): string | undefined {
   return s ? s : undefined;
 }
 
+/**
+ * RegCheck Ireland reports the fuel type as a single letter where the UK
+ * providers report a word. Verified against the live API, which returned
+ * `FuelType: "D"` for a diesel Porsche Macan — passed through unexpanded that
+ * puts a bare "D" in front of the customer as their vehicle's fuel type.
+ *
+ * An unrecognised code is returned unchanged rather than guessed at: showing
+ * an odd code is a cosmetic problem, printing the wrong fuel type on a
+ * certificate is not.
+ */
+const FUEL_CODES: Record<string, string> = {
+  D: "DIESEL",
+  P: "PETROL",
+  E: "ELECTRIC",
+  H: "HYBRID",
+};
+
+export function expandFuelCode(value: string | undefined): string | undefined {
+  const trimmed = value?.trim().toUpperCase();
+  if (!trimmed) return undefined;
+  return FUEL_CODES[trimmed] ?? trimmed;
+}
+
 /** Pulls the JSON payload out of the XML envelope. */
 export function extractVehicleJson(xml: string): RegCheckIrelandResponse {
   const match = /<vehicleJson>([\s\S]*?)<\/vehicleJson>/.exec(xml);
@@ -72,7 +95,7 @@ export function mapRegCheckResponse(
     model: unwrap(body.CarModel)?.toUpperCase(),
     colour: undefined,
     yearOfManufacture: Number.isFinite(parsedYear) ? parsedYear : undefined,
-    fuelType: unwrap(body.FuelType)?.toUpperCase(),
+    fuelType: expandFuelCode(unwrap(body.FuelType)),
     vehicleType: classifyVehicleType(undefined, undefined),
   };
 }

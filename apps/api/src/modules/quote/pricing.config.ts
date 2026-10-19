@@ -1,18 +1,10 @@
-import type { CoverType } from "@motorcover/shared-types";
-
 /**
- * 1-day short term motor insurance — flat rate by cover type.
+ * Pricing settings that are the same in every market.
  *
- * Vehicle type no longer affects the premium. It is still classified from DVLA
- * data and stored on the vehicle (see classifyVehicleType) for reporting and
- * underwriting, but a bike, car, van and HGV on the same cover type all pay
- * the same price.
+ * The rates themselves are per-market and live in the market table in
+ * @motorcover/shared-types, so that a market's currency and its figures cannot
+ * drift apart.
  */
 export const pricingConfig = {
-  coverTypeRates: {
-    PERSONAL: 1500, // £15
-    BUSINESS: 2500, // £25
-  } satisfies Record<CoverType, number>,
-
   quoteValidityHours: 24,
 };

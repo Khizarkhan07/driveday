@@ -3,6 +3,7 @@ import { api } from "../../lib/api";
 import { Card } from "../../components/ui";
 import { DateRangeFilter } from "../../components/DateRangeFilter";
 import { rangeQuery, useAdminFilterStore } from "../../lib/admin-filter-store";
+import { formatDateTime, money } from "../../lib/market";
 
 interface Stats {
   totalUsers: number;
@@ -12,12 +13,9 @@ interface Stats {
   filtered: boolean;
 }
 
-function money(pence: number) {
-  return `£${(pence / 100).toFixed(2)}`;
-}
 
 function fmtDate(d: string) {
-  return new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London" });
+  return formatDateTime(d);
 }
 
 export function AdminDashboardPage() {

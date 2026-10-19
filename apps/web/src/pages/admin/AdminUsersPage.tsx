@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { Badge, Card } from "../../components/ui";
+import { formatDateTime } from "../../lib/market";
 
 interface UserRow {
   id: string;
@@ -24,7 +25,7 @@ interface UsersResponse {
 
 function fmtDate(d: string | null) {
   if (!d) return "—";
-  return new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London" });
+  return formatDateTime(d);
 }
 
 export function AdminUsersPage() {

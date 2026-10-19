@@ -15,8 +15,12 @@ async function highestIssuedSequence(): Promise<number> {
   // prefix that has not always been the same value, and a plain string sort
   // would rank a higher year above a higher sequence — handing back a number
   // that is already in use.
+  //
+  // Takes the segment after the last hyphen rather than the third, because a
+  // market prefix shifts the positions: the third segment of
+  // Policy-IE-2023-000001 is the year, which would be read as a sequence.
   const rows = await prisma.$queryRawUnsafe<{ max: number | null }[]>(
-    `SELECT MAX(CAST(split_part("policyNumber", '-', 3) AS INTEGER)) AS max FROM "Policy"`
+    `SELECT MAX(CAST(regexp_replace("policyNumber", '^.*-', '') AS INTEGER)) AS max FROM "Policy"`
   );
   return rows[0]?.max ?? 0;
 }
@@ -55,7 +59,9 @@ export async function issuePolicyForQuote(quoteId: string, paymentId: string) {
           issuedAt: new Date(),
           paymentId,
         },
-      })
+      }),
+    5,
+    env.market.policyNumberPrefix
   );
   const policyNumber = policy.policyNumber;
 
@@ -80,6 +86,7 @@ export async function issuePolicyForQuote(quoteId: string, paymentId: string) {
         startDate: quote.startDate.toISOString(),
         endDate: quote.endDate.toISOString(),
         totalPence: quote.totalPence,
+        currency: quote.currency,
         portalUrl: `${env.appBaseUrl}/portal/policies/${policy.id}`,
       }),
       attachments: documents.map((doc) => ({

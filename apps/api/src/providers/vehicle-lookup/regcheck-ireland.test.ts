@@ -6,6 +6,7 @@ import {
   vehicleLookupRequestSchema,
 } from "@motorcover/shared-types";
 import {
+  expandFuelCode,
   extractVehicleJson,
   mapRegCheckResponse,
   unwrap,
@@ -127,5 +128,47 @@ describe("extractVehicleJson + mapRegCheckResponse", () => {
 
   it("leaves colour undefined — RegCheck does not return it", () => {
     expect(mapRegCheckResponse(extractVehicleJson(REAL_XML), "04MH8917").colour).toBeUndefined();
+  });
+});
+
+describe("fuel type codes", () => {
+  // Verified against the live API: RegCheck Ireland returns a single-letter
+  // code, not a word. Passing it through puts a bare "D" on the customer's
+  // vehicle confirmation page and on their documents.
+  it("expands the codes the Irish API actually returns", () => {
+    expect(expandFuelCode("D")).toBe("DIESEL");
+    expect(expandFuelCode("P")).toBe("PETROL");
+    expect(expandFuelCode("E")).toBe("ELECTRIC");
+    expect(expandFuelCode("H")).toBe("HYBRID");
+  });
+
+  it("is case insensitive and tolerates surrounding space", () => {
+    expect(expandFuelCode("d")).toBe("DIESEL");
+    expect(expandFuelCode(" D ")).toBe("DIESEL");
+  });
+
+  it("passes through a value that is already a word", () => {
+    expect(expandFuelCode("DIESEL")).toBe("DIESEL");
+    expect(expandFuelCode("Petrol")).toBe("PETROL");
+  });
+
+  // Better an unexpanded code than a wrong expansion or a crash.
+  it("returns an unknown code unchanged rather than guessing", () => {
+    expect(expandFuelCode("X")).toBe("X");
+    expect(expandFuelCode("Z9")).toBe("Z9");
+  });
+
+  it("leaves a missing value missing", () => {
+    expect(expandFuelCode(undefined)).toBeUndefined();
+    expect(expandFuelCode("")).toBeUndefined();
+    expect(expandFuelCode("   ")).toBeUndefined();
+  });
+
+  it("expands the fuel type when mapping a response", () => {
+    const mapped = mapRegCheckResponse(
+      { CarMake: { CurrentTextValue: "PORSCHE" }, FuelType: { CurrentTextValue: "D" } },
+      "161D12345"
+    );
+    expect(mapped.fuelType).toBe("DIESEL");
   });
 });

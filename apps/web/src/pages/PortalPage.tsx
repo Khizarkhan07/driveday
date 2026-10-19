@@ -4,10 +4,8 @@ import type { PolicySummary } from "@motorcover/shared-types";
 import { api } from "../lib/api";
 import { useCurrentUser } from "../lib/auth";
 import { Badge, Button, Card } from "../components/ui";
+import { formatDate, money } from "../lib/market";
 
-function money(pence: number): string {
-  return `£${(pence / 100).toFixed(2)}`;
-}
 
 function statusTone(status: string): "success" | "warning" | "neutral" {
   if (status === "ISSUED") return "success";
@@ -75,8 +73,8 @@ export function PortalPage() {
                     <p className="font-semibold text-ink">{p.policyNumber}</p>
                     <p className="text-sm text-ink/55">
                       {p.vehicleRegistration} ·{" "}
-                      {new Date(p.startDate).toLocaleDateString("en-GB", { timeZone: "Europe/London" })} –{" "}
-                      {new Date(p.endDate).toLocaleDateString("en-GB", { timeZone: "Europe/London" })}
+                      {formatDate(p.startDate)} –{" "}
+                      {formatDate(p.endDate)}
                     </p>
                   </div>
                 </div>

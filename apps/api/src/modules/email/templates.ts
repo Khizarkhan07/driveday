@@ -1,4 +1,4 @@
-import { BRAND_NAME } from "@motorcover/shared-types";
+import { BRAND_NAME, formatMoney } from "@motorcover/shared-types";
 
 // ---------------------------------------------------------------------------
 // Shared layout
@@ -55,10 +55,12 @@ export function renderPolicyConfirmationEmail(input: {
   startDate: string;
   endDate: string;
   totalPence: number;
+  /** The currency the quote was priced in, as stored on the quote row. */
+  currency: string;
   portalUrl: string;
 }): string {
   const name = escapeHtml(input.firstName ?? "there");
-  const amount = `£${(input.totalPence / 100).toFixed(2)}`;
+  const amount = formatMoney(input.totalPence, input.currency);
   const startD = new Date(input.startDate);
   const endD = new Date(input.endDate);
 
@@ -175,10 +177,12 @@ export function renderQuoteSavedEmail(input: {
   firstName: string | null;
   registration: string;
   totalPence: number;
+  /** The currency the quote was priced in, as stored on the quote row. */
+  currency: string;
   resumeUrl: string;
 }): string {
   const name = escapeHtml(input.firstName ?? "there");
-  const amount = `£${(input.totalPence / 100).toFixed(2)}`;
+  const amount = formatMoney(input.totalPence, input.currency);
 
   const body = `
     <div style="background:linear-gradient(135deg,#1c9456 0%,#3ddc81 100%);padding:28px 36px;">

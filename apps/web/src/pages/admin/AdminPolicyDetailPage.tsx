@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api, apiBaseUrl, sessionToken } from "../../lib/api";
 import { Badge, Card } from "../../components/ui";
+import { formatDateTime, money } from "../../lib/market";
 
 async function downloadDocument(docId: string, filename: string) {
   const token = sessionToken.get();
@@ -45,10 +46,9 @@ interface Event {
   createdAt: string;
 }
 
-function money(pence: number) { return `£${(pence / 100).toFixed(2)}`; }
 function fmtDate(d: string | null) {
   if (!d) return "—";
-  return new Date(d).toLocaleString("en-GB", { timeZone: "Europe/London" });
+  return formatDateTime(d);
 }
 function statusTone(s: string): "success" | "warning" | "neutral" {
   if (s === "ISSUED" || s === "SUCCEEDED") return "success";

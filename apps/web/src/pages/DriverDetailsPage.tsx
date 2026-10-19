@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { driverDetailsSchema, type DriverDetails } from "@motorcover/shared-types";
+import { driverDetailsSchemaFor, type DriverDetails } from "@motorcover/shared-types";
 import { useBuyFlowStore } from "../lib/buy-flow-store";
+import { market } from "../lib/market";
 import { Button, Card, Field, Stepper, Banner } from "../components/ui";
 
 export function DriverDetailsPage() {
@@ -26,7 +27,7 @@ export function DriverDetailsPage() {
     clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<DriverDetails>({
-    resolver: zodResolver(driverDetailsSchema),
+    resolver: zodResolver(driverDetailsSchemaFor(market)),
     defaultValues: storedDriver ?? {
       firstName: "",
       lastName: "",
@@ -82,7 +83,7 @@ export function DriverDetailsPage() {
             <Field label="Address line 2 (optional)" {...register("addressLine2")} />
             <div className="grid grid-cols-2 gap-4">
               <Field label="Town / city" {...register("city")} error={errors.city?.message} />
-              <Field label="Postcode" {...register("postcode")} error={errors.postcode?.message} />
+              <Field label={market.postalCodeLabel} {...register("postcode")} error={errors.postcode?.message} />
             </div>
           </div>
         </Card>
@@ -93,7 +94,7 @@ export function DriverDetailsPage() {
             <Field
               label="Driving licence number"
               disabled={withholdLicence}
-              placeholder={withholdLicence ? "Not provided" : undefined}
+              placeholder={withholdLicence ? "Not provided" : market.licencePlaceholder || undefined}
               {...register("licenceNumber")}
               error={withholdLicence ? undefined : errors.licenceNumber?.message}
             />

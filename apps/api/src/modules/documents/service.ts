@@ -1,5 +1,6 @@
 import React from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
+import { formatMoney } from "@motorcover/shared-types";
 import type { CoverType, DocumentType } from "@motorcover/shared-types";
 import { prisma, logEvent } from "../../db/client";
 import { getDocumentStorage } from "../../providers/storage/factory";
@@ -41,10 +42,6 @@ function formatDOB(isoDate: string): string {
   return `${day}/${month}/${year}`;
 }
 
-function formatMoney(pence: number): string {
-  return `£${(pence / 100).toFixed(2)}`;
-}
-
 interface PolicyForDocs {
   id: string;
   policyNumber: string;
@@ -54,6 +51,12 @@ interface PolicyForDocs {
   user: { firstName: string | null; lastName: string | null; email: string };
   quote: {
     totalPence: number;
+    /**
+     * The currency this quote was priced in. Read from the quote rather than
+     * the configured market, because a document is rendered for a quote that
+     * was priced at some point in the past and must not be reinterpreted.
+     */
+    currency: string;
     durationDays: number;
     driverDetails: unknown;
     coverType: string;
@@ -179,7 +182,7 @@ export async function generatePolicyDocuments(
       vehicleDescription: vehicle,
       startDate,
       endDate,
-      premium: formatMoney(policy.quote.totalPence),
+      premium: formatMoney(policy.quote.totalPence, policy.quote.currency),
       dateOfIssue,
     })
   );

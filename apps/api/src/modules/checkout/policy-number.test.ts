@@ -115,3 +115,62 @@ describe("createWithUniqueNumber", () => {
     expect(create).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("policy numbers — per market prefix", () => {
+  // Each market has its own database, so both would independently issue
+  // Policy-2023-000001. The unique constraint is per database and would not
+  // catch it; the prefix is what keeps the two number spaces apart.
+  it("inserts the market prefix when one is configured", () => {
+    expect(formatPolicyNumber(1, "IE")).toBe("Policy-IE-2023-000001");
+    expect(formatPolicyNumber(369, "IE")).toBe("Policy-IE-2023-000369");
+  });
+
+  // Live UK policies carry the original format. It must not change.
+  it("keeps the original format when no prefix is configured", () => {
+    expect(formatPolicyNumber(1, null)).toBe("Policy-2023-000001");
+    expect(formatPolicyNumber(1)).toBe("Policy-2023-000001");
+  });
+
+  it("never issues the same number in two markets", () => {
+    expect(formatPolicyNumber(1, null)).not.toBe(formatPolicyNumber(1, "IE"));
+  });
+
+  it("reads the sequence back out of a prefixed number", () => {
+    expect(parsePolicySequence("Policy-IE-2023-000001")).toBe(1);
+    expect(parsePolicySequence("Policy-IE-2023-000369")).toBe(369);
+    expect(parsePolicySequence("Policy-IE-2023-1234567")).toBe(1234567);
+  });
+
+  it("still reads the sequence out of an unprefixed number", () => {
+    expect(parsePolicySequence("Policy-2023-000001")).toBe(1);
+    expect(parsePolicySequence("Policy-2023-000369")).toBe(369);
+  });
+
+  it("round-trips every market's format", () => {
+    for (const prefix of [null, "IE"]) {
+      for (const sequence of [1, 42, 999999, 1000000]) {
+        expect(parsePolicySequence(formatPolicyNumber(sequence, prefix))).toBe(sequence);
+      }
+    }
+  });
+
+  it("allocates prefixed numbers when retrying past a collision", async () => {
+    const attempted: string[] = [];
+    await createWithUniqueNumber(
+      async () => 7,
+      async (policyNumber) => {
+        attempted.push(policyNumber);
+        if (attempted.length < 2) {
+          throw Object.assign(new Error("taken"), {
+            code: "P2002",
+            meta: { target: ["policyNumber"] },
+          });
+        }
+        return policyNumber;
+      },
+      5,
+      "IE"
+    );
+    expect(attempted).toEqual(["Policy-IE-2023-000007", "Policy-IE-2023-000008"]);
+  });
+});

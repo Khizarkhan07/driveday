@@ -1,39 +1,7 @@
-import React from "react";
 import { describe, expect, it } from "vitest";
+import { documentText } from "./document-text";
 import { CertificateDocument } from "./templates/CertificateDocument";
 import { PolicyWordingDocument } from "./templates/PolicyWordingDocument";
-
-/**
- * Collects the text of a document by walking the React tree, invoking function
- * components as it goes.
- *
- * Deliberately not via pdf-parse: it bundles a pdf.js build that throws
- * "bad XRef entry" on some of our generated buffers regardless of retries
- * (the same failure behind the pre-existing watermark test failures). Walking
- * the tree asserts the same wording deterministically. Watermark coverage of
- * actual PDF rendering lives in watermark.test.ts.
- */
-function textOf(node: React.ReactNode): string {
-  if (node === null || node === undefined || typeof node === "boolean") return "";
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(textOf).join(" ");
-
-  const element = node as React.ReactElement<{ children?: React.ReactNode }>;
-  if (!element.type) return "";
-
-  // Function component: call it to get its output, then keep walking.
-  if (typeof element.type === "function") {
-    const Component = element.type as (props: unknown) => React.ReactNode;
-    return textOf(Component(element.props));
-  }
-
-  return textOf(element.props?.children);
-}
-
-/** PDF text nodes are split across lines; collapse before matching. */
-function flat(text: string): string {
-  return text.replace(/\s+/g, " ");
-}
 
 const CERT_PROPS = {
   policyNumber: "Policy-2026-000123",
@@ -49,13 +17,11 @@ const BUSINESS_LIMITATION =
 const PERSONAL_LIMITATION = "Use for Social Domestic and Pleasure Purposes";
 
 function wordingText(coverType?: "PERSONAL" | "BUSINESS"): string {
-  return flat(textOf(React.createElement(PolicyWordingDocument, coverType ? { coverType } : {})));
+  return documentText(PolicyWordingDocument, coverType ? { coverType } : {});
 }
 
 function certificateText(coverType?: "PERSONAL" | "BUSINESS"): string {
-  return flat(
-    textOf(React.createElement(CertificateDocument, coverType ? { ...CERT_PROPS, coverType } : CERT_PROPS))
-  );
+  return documentText(CertificateDocument, coverType ? { ...CERT_PROPS, coverType } : CERT_PROPS);
 }
 
 describe("policy wording — cover type", () => {

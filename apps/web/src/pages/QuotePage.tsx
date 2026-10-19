@@ -6,6 +6,7 @@ import { api, ApiError } from "../lib/api";
 import { useBuyFlowStore } from "../lib/buy-flow-store";
 import { useCurrentUser } from "../lib/auth";
 import { Banner, Button, Card, Stepper } from "../components/ui";
+import { formatDateTime, money } from "../lib/market";
 
 interface QuoteResponse {
   quote: {
@@ -17,9 +18,6 @@ interface QuoteResponse {
   };
 }
 
-function money(pence: number): string {
-  return `£${(pence / 100).toFixed(2)}`;
-}
 
 export function QuotePage() {
   const navigate = useNavigate();
@@ -111,13 +109,13 @@ export function QuotePage() {
               <div className="bg-ink/[.03] rounded-xl p-3 border border-ink/8">
                 <p className="text-xs text-ink/45 mb-1">Starts</p>
                 <p className="text-sm text-ink font-semibold">
-                  {new Date(startDate!).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}
+                  {formatDateTime(startDate!, { dateStyle: "short", timeStyle: "short" })}
                 </p>
               </div>
               <div className="bg-ink/[.03] rounded-xl p-3 border border-ink/8">
                 <p className="text-xs text-ink/45 mb-1">Quote valid until</p>
                 <p className="text-sm text-ink font-semibold">
-                  {new Date(result.quote.expiresAt).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}
+                  {formatDateTime(result.quote.expiresAt, { dateStyle: "short", timeStyle: "short" })}
                 </p>
               </div>
             </div>
