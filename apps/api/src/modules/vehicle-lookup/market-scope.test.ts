@@ -33,14 +33,20 @@ describe("vehicleLookupRequestSchemaFor — the market fixes the country", () =>
    * The country must come from the deployment's configuration, so a UK plate
    * cannot be looked up against the Irish market by asking nicely.
    */
-  it("ignores a country supplied in the request body", () => {
+  it("never honours a country the market may not search", () => {
+    // Ireland searches only the Irish register, whatever the body claims.
     const irishMarket = vehicleLookupRequestSchemaFor(ie);
     expect(irishMarket.safeParse({ registration: UK_REG, country: "uk" }).success).toBe(false);
     expect(irishMarket.parse({ registration: IRISH_REG, country: "uk" }).country).toBe("ie");
+  });
 
+  it("honours a country the market is allowed to search", () => {
+    // The UK market may search Ireland, so "country" is meaningful there.
     const ukMarket = vehicleLookupRequestSchemaFor(uk);
-    expect(ukMarket.safeParse({ registration: IRISH_REG, country: "ie" }).success).toBe(false);
-    expect(ukMarket.parse({ registration: UK_REG, country: "ie" }).country).toBe("uk");
+    expect(ukMarket.parse({ registration: IRISH_REG, country: "ie" }).country).toBe("ie");
+    expect(ukMarket.parse({ registration: UK_REG }).country).toBe("uk");
+    // ...but only when the plate matches the register asked for.
+    expect(ukMarket.safeParse({ registration: UK_REG, country: "ie" }).success).toBe(false);
   });
 
   it("normalises the registration the way the register writes it", () => {
@@ -86,7 +92,7 @@ describe("manualVehicleEntrySchemaFor — the market fixes the country", () => {
     ).toBe(false);
   });
 
-  it("ignores a country supplied in the request body", () => {
+  it("ignores a country the market may not search", () => {
     const parsed = manualVehicleEntrySchemaFor(ie).parse({
       ...MANUAL_BASE,
       registration: IRISH_REG,

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { MarketConfig } from "./market";
+import { COUNTRY_PLATES, resolveLookupCountry, type MarketConfig } from "./market";
 
 /** Which country's register a lookup should be run against. */
 export const lookupCountrySchema = z.enum(["uk", "ie"]);
@@ -80,21 +80,24 @@ export type VehicleLookupRequest = z.infer<typeof vehicleLookupRequestSchema>;
  */
 export function vehicleLookupRequestSchemaFor(market: MarketConfig) {
   return z
-    .object({ registration: z.string() })
+    .object({
+      registration: z.string(),
+      country: lookupCountrySchema.optional(),
+    })
     .passthrough()
     .superRefine((value, ctx) => {
-      const parsed = registrationSchemaFor(market.country).safeParse(value.registration);
-      if (!parsed.success) {
+      const country = resolveLookupCountry(market, value.country);
+      if (!registrationSchemaFor(country).safeParse(value.registration).success) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["registration"],
-          message: market.registrationErrorMessage,
+          message: COUNTRY_PLATES[country].errorMessage,
         });
       }
     })
     .transform((value) => ({
       registration: normalizeRegistration(value.registration),
-      country: market.country,
+      country: resolveLookupCountry(market, value.country),
     }));
 }
 
@@ -191,15 +194,15 @@ export const manualVehicleEntrySchema = z
  */
 export function manualVehicleEntrySchemaFor(market: MarketConfig) {
   return z
-    .object(manualVehicleFields)
+    .object({ ...manualVehicleFields, country: lookupCountrySchema.optional() })
     .passthrough()
     .superRefine((value, ctx) => {
-      const parsed = registrationSchemaFor(market.country).safeParse(value.registration);
-      if (!parsed.success) {
+      const country = resolveLookupCountry(market, value.country);
+      if (!registrationSchemaFor(country).safeParse(value.registration).success) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["registration"],
-          message: market.registrationErrorMessage,
+          message: COUNTRY_PLATES[country].errorMessage,
         });
       }
     })
@@ -208,7 +211,7 @@ export function manualVehicleEntrySchemaFor(market: MarketConfig) {
         value;
       return {
         registration: normalizeRegistration(value.registration),
-        country: market.country,
+        country: resolveLookupCountry(market, value.country),
         make,
         model,
         colour,

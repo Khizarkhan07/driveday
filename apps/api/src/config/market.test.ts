@@ -67,11 +67,6 @@ describe("market configuration", () => {
     expect(marketFor("ie").postalCodeLabel).toBe("Eircode");
   });
 
-  it("shows the right country badge on the plate", () => {
-    expect(marketFor("uk").plate.badgeLabel).toBe("UK");
-    expect(marketFor("ie").plate.badgeLabel).toBe("IRL");
-  });
-
   it("defines every market in MARKET_CODES", () => {
     for (const code of MARKET_CODES) {
       expect(marketFor(code).code).toBe(code);

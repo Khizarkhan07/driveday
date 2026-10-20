@@ -31,19 +31,15 @@ export interface MarketConfig {
   /** Flat 1-day rate in minor units, by cover type. */
   coverTypeRates: Record<CoverType, number>;
 
-  /** Registration input affordances. */
-  registrationPlaceholder: string;
-  registrationMaxLength: number;
-  /** The message shown when a registration does not match this market's format. */
-  registrationErrorMessage: string;
-
-  /** The plate's real-world appearance, which differs by country. */
-  plate: {
-    badgeLabel: string;
-    background: string;
-    badgeBackground: string;
-    badgeColor: string;
-  };
+  /**
+   * Which vehicle registers this market may search, most common first.
+   *
+   * The first entry is the default. A market with more than one lets the
+   * customer choose — the UK site has always allowed an Irish registration to
+   * be searched — but a register absent from this list cannot be reached from
+   * this market however the request is framed.
+   */
+  lookupCountries: readonly LookupCountry[];
 
   /**
    * Driving licence number format. `null` means no format check — used where we
@@ -64,6 +60,46 @@ export interface MarketConfig {
   policyNumberPrefix: string | null;
 }
 
+/**
+ * How each country's plate looks and validates.
+ *
+ * Per country rather than per market, because a market may search more than
+ * one register: the UK form has to restyle itself to an Irish plate when the
+ * customer says the vehicle is Irish.
+ */
+export interface CountryPlate {
+  badgeLabel: string;
+  background: string;
+  badgeBackground: string;
+  badgeColor: string;
+  placeholder: string;
+  maxLength: number;
+  /** Shown when a registration does not match this country's format. */
+  errorMessage: string;
+}
+
+export const COUNTRY_PLATES: Record<LookupCountry, CountryPlate> = {
+  uk: {
+    badgeLabel: "UK",
+    background: "#ffd80a",
+    badgeBackground: "#063298",
+    badgeColor: "#ffd80a",
+    placeholder: "AB12 CDE",
+    maxLength: 8,
+    errorMessage: "Enter a valid UK registration number",
+  },
+  // Irish plates are black on white with a blue EU band reading IRL.
+  ie: {
+    badgeLabel: "IRL",
+    background: "#ffffff",
+    badgeBackground: "#063298",
+    badgeColor: "#ffffff",
+    placeholder: "161-D-12345",
+    maxLength: 12,
+    errorMessage: "Enter a valid Irish registration number, e.g. 161-D-12345",
+  },
+};
+
 export const MARKETS: Record<MarketCode, MarketConfig> = {
   uk: {
     code: "uk",
@@ -72,15 +108,8 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
     locale: "en-GB",
     timeZone: "Europe/London",
     coverTypeRates: { PERSONAL: 1500, BUSINESS: 2500 },
-    registrationPlaceholder: "AB12 CDE",
-    registrationMaxLength: 8,
-    registrationErrorMessage: "Enter a valid UK registration number",
-    plate: {
-      badgeLabel: "UK",
-      background: "#ffd80a",
-      badgeBackground: "#063298",
-      badgeColor: "#ffd80a",
-    },
+    // The UK site has always let a customer search an Irish registration.
+    lookupCountries: ["uk", "ie"],
     licencePattern: /^[A-Z9]{5}\d{6}[A-Z9]{2}\d[A-Z]{2}$/i,
     licenceMessage: "Enter a valid UK driving licence number (e.g. MORGA753116SM9IJ)",
     licencePlaceholder: "MORGA753116SM9IJ",
@@ -95,16 +124,8 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
     timeZone: "Europe/Dublin",
     // Same figures as the UK, denominated in euro.
     coverTypeRates: { PERSONAL: 1500, BUSINESS: 2500 },
-    registrationPlaceholder: "161-D-12345",
-    registrationMaxLength: 12,
-    registrationErrorMessage: "Enter a valid Irish registration number, e.g. 161-D-12345",
-    // Irish plates are black on white with a blue EU band reading IRL.
-    plate: {
-      badgeLabel: "IRL",
-      background: "#ffffff",
-      badgeBackground: "#063298",
-      badgeColor: "#ffffff",
-    },
+    // Ireland has its own documents and never searches the UK register.
+    lookupCountries: ["ie"],
     // No supplied Irish format, and inventing one would reject valid licences.
     licencePattern: null,
     licenceMessage: "Enter your driving licence number",
@@ -113,6 +134,22 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
     policyNumberPrefix: "IE",
   },
 };
+
+/**
+ * Which register a request should actually search.
+ *
+ * A requested country is honoured only when the market is permitted to search
+ * it; anything else falls back to the market's default. The request body is
+ * therefore never able to reach a register the deployment does not allow.
+ */
+export function resolveLookupCountry(
+  market: MarketConfig,
+  requested: LookupCountry | undefined
+): LookupCountry {
+  return requested && market.lookupCountries.includes(requested)
+    ? requested
+    : market.lookupCountries[0];
+}
 
 export function marketFor(code: MarketCode): MarketConfig {
   return MARKETS[code];

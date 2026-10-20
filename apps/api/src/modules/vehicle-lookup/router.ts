@@ -14,9 +14,12 @@ export const vehicleLookupRouter = Router();
 vehicleLookupRouter.post("/", async (req, res) => {
   const parsed = vehicleLookupRequestSchemaFor(env.market).safeParse(req.body);
   if (!parsed.success) {
-    // The market decides which register we query, so it also decides the
-    // wording. A client-supplied country is deliberately not consulted.
-    return res.status(400).json({ error: env.market.registrationErrorMessage });
+    // The schema resolved which register was actually searched — honouring a
+    // requested country only where this market permits it — so the message it
+    // produced is the one that matches what we looked in.
+    return res.status(400).json({
+      error: parsed.error.issues[0]?.message ?? "Enter a valid registration number",
+    });
   }
   const { registration, country } = parsed.data;
 

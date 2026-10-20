@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import {
   BUSINESS_COVER_PLATFORMS,
+  COUNTRY_PLATES,
   COVER_TYPE_LABELS,
   registrationSchemaFor,
+  type LookupCountry,
   type VehicleLookupResult,
 } from "@motorcover/shared-types";
 import { api, ApiError } from "../lib/api";
@@ -23,11 +25,22 @@ const PRICE_LIST = [
 ];
 const FROM_PRICE = PRICE_LIST[0].price;
 
+/**
+ * The second register this market may search, if it has one. The UK market can
+ * search Ireland, so its form offers the choice; Ireland searches only itself
+ * and shows no option at all.
+ */
+const ALTERNATE_COUNTRY: LookupCountry | undefined = market.lookupCountries[1];
+
+const COUNTRY_LABELS: Record<LookupCountry, string> = { uk: "UK", ie: "Irish" };
+
 export function LandingPage() {
   const navigate = useNavigate();
   const setVehicle = useBuyFlowStore((s) => s.setVehicle);
   const reset = useBuyFlowStore((s) => s.reset);
   const [registration, setRegistration] = useState("");
+  const [country, setCountry] = useState<LookupCountry>(market.lookupCountries[0]);
+  const plate = COUNTRY_PLATES[country];
   const coverType = useBuyFlowStore((s) => s.coverType);
   const setCoverType = useBuyFlowStore((s) => s.setCoverType);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -49,10 +62,11 @@ export function LandingPage() {
 
   const lookup = useMutation({
     mutationFn: (reg: string) =>
-      // No country is sent: the API resolves it from its own configured
-      // market and ignores anything the client claims.
+      // The API honours this only if its own market is allowed to search that
+      // register, so it is a preference rather than an instruction.
       api.post<{ vehicle: VehicleLookupResult & { id: string } }>("/vehicle-lookup", {
         registration: reg,
+        country,
       }),
     onSuccess: ({ vehicle }) => { reset(); setVehicle(vehicle); navigate("/vehicle-confirm"); },
   });
@@ -60,7 +74,7 @@ export function LandingPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setValidationError(null);
-    const parsed = registrationSchemaFor(market.country).safeParse(registration);
+    const parsed = registrationSchemaFor(country).safeParse(registration);
     if (!parsed.success) { setValidationError(parsed.error.issues[0]?.message ?? "Enter a valid registration"); return; }
     setLastSearched(parsed.data);
     lookup.mutate(parsed.data);
@@ -188,21 +202,38 @@ export function LandingPage() {
               )}
 
               {/* Number plate, in this market's national style */}
-              <div style={{ display:"flex", alignItems:"stretch", overflow:"hidden", background:market.plate.background, borderRadius:"9px", boxShadow:"inset 0 0 0 2px rgba(0,0,0,.18), 0 14px 34px -12px rgba(11,12,30,.4)" }}>
-                <div style={{ background:market.plate.badgeBackground, color:"#fff", width:"38px", flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"4px", fontWeight:800, fontSize:"11px", letterSpacing:".05em" }}>
-                  <span style={{ color:market.plate.badgeColor, fontSize:"9px", lineHeight:1 }}>★</span>
-                  {market.plate.badgeLabel}
+              <div style={{ display:"flex", alignItems:"stretch", overflow:"hidden", background:plate.background, borderRadius:"9px", boxShadow:"inset 0 0 0 2px rgba(0,0,0,.18), 0 14px 34px -12px rgba(11,12,30,.4)" }}>
+                <div style={{ background:plate.badgeBackground, color:"#fff", width:"38px", flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"4px", fontWeight:800, fontSize:"11px", letterSpacing:".05em" }}>
+                  <span style={{ color:plate.badgeColor, fontSize:"9px", lineHeight:1 }}>★</span>
+                  {plate.badgeLabel}
                 </div>
                 <input
                   value={registration}
                   onChange={(e) => setRegistration(e.target.value.toUpperCase())}
-                  placeholder={market.registrationPlaceholder}
-                  maxLength={market.registrationMaxLength}
+                  placeholder={plate.placeholder}
+                  maxLength={plate.maxLength}
                   autoComplete="off"
                   aria-label="Vehicle registration"
                   style={{ background:"transparent", border:"none", outline:"none", width:"100%", padding:"14px 8px", textAlign:"center", textTransform:"uppercase", color:"#111", fontFamily:'"Clash Display", system-ui, sans-serif', fontWeight:700, fontSize:"2.1rem", letterSpacing:"0.1em" }}
                 />
               </div>
+
+              {ALTERNATE_COUNTRY && (
+                <label className="mt-3 flex items-center gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={country === ALTERNATE_COUNTRY}
+                    onChange={(e) => {
+                      setCountry(e.target.checked ? ALTERNATE_COUNTRY : market.lookupCountries[0]);
+                      setValidationError(null);
+                    }}
+                    className="w-4 h-4 rounded border-ink/25 text-mint focus:ring-mint accent-mint cursor-pointer"
+                  />
+                  <span className="text-sm text-ink/70">
+                    This is an {COUNTRY_LABELS[ALTERNATE_COUNTRY]} registration
+                  </span>
+                </label>
+              )}
 
               {validationError && <p className="text-xs text-red-500 mt-1.5 text-center">{validationError}</p>}
 
@@ -228,7 +259,7 @@ export function LandingPage() {
                       onClick={() => {
                         reset();
                         navigate(
-                          `/vehicle-manual?reg=${encodeURIComponent(lastSearched)}`
+                          `/vehicle-manual?reg=${encodeURIComponent(lastSearched)}&country=${country}`
                         );
                       }}
                       className="mt-2 w-full rounded-xl border border-ink/15 bg-white text-ink font-bold py-3 text-sm hover:bg-ink/5 transition"

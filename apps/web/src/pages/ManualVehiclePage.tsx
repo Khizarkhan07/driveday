@@ -4,8 +4,10 @@ import { useMutation } from "@tanstack/react-query";
 import {
   FUEL_TYPES,
   VEHICLE_TYPE_LABELS,
+  lookupCountrySchema,
   manualVehicleEntrySchemaFor,
   registrationSchemaFor,
+  resolveLookupCountry,
   type VehicleLookupResult,
   type VehicleType,
 } from "@motorcover/shared-types";
@@ -37,9 +39,11 @@ export function ManualVehiclePage() {
   const setVehicle = useBuyFlowStore((s) => s.setVehicle);
 
   const registration = params.get("reg") ?? "";
-  // The register is fixed by this deployment's market, not inferred from the
-  // plate's shape or carried in the URL.
-  const country = market.country;
+  // The landing page passes on which register it searched. It is honoured only
+  // where this market is permitted to search that register, so a hand-edited
+  // URL cannot reach one the deployment disallows.
+  const requested = lookupCountrySchema.safeParse(params.get("country"));
+  const country = resolveLookupCountry(market, requested.success ? requested.data : undefined);
 
   // Returning here from the confirm page to correct something should show what
   // was entered, not an empty form.
