@@ -1,5 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import { useCurrentUser, useLogout } from "../lib/auth";
+import { market } from "../lib/market";
 
 export function AppLayout() {
   const { data } = useCurrentUser();
@@ -66,7 +67,7 @@ export function AppLayout() {
 
       <footer className="border-t border-ink/8 py-6 px-4 text-center text-xs text-ink/40 space-y-1">
         <p>Daydrive™ is a registered trademark © 2023 Daydrive.co.uk Limited. Authorised and regulated by the Financial Conduct Authority Firm Reference Number 407863.</p>
-        <p>Registered in England and Wales under Company Registration Number 04596433. Registered office — 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.</p>
+        <p>Registered in England and Wales under Company Registration Number 04596433. {market.company.addressTerm} — {market.company.address}.</p>
       </footer>
     </div>
   );

@@ -2,6 +2,7 @@ import React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
+import { MARKETS, type CompanyDetails } from "@motorcover/shared-types";
 
 const s = StyleSheet.create({
   h1: { fontSize: 14, fontWeight: 700, marginBottom: 8, marginTop: 12, color: "#1f2937" },
@@ -25,7 +26,14 @@ const P = ({ children }: { children: React.ReactNode }) => <Text style={s.p}>{ch
 const Bullet = ({ children }: { children: React.ReactNode }) => <Text style={s.bullet}>• {children}</Text>;
 const Rule = () => <View style={s.rule} />;
 
-export function TermsOfBusinessDocument() {
+export interface TermsOfBusinessDocumentProps {
+  /** Defaults to the UK company so UK rendering is unchanged. */
+  company?: CompanyDetails;
+}
+
+export function TermsOfBusinessDocument({
+  company = MARKETS.uk.company,
+}: TermsOfBusinessDocumentProps) {
   return (
     <DemoDocumentLayout title="">
       <View style={{ marginTop: -20, flexDirection: "row", alignItems: "center", borderBottomWidth: 1, borderBottomColor: "#e5e7eb", paddingBottom: 8, marginBottom: 10 }}>
@@ -38,7 +46,7 @@ export function TermsOfBusinessDocument() {
       <P>
         Day Drive is a trading name of Day Drive Ltd, registered in England and Wales (company number 05044963),
         authorised and regulated by the Financial Conduct Authority (FCA reference number 751221).
-        Our registered address is: 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.
+        Our {company.addressHeading.toLowerCase()} is: {company.address}.
       </P>
       <P>
         We arrange short term motor insurance policies on behalf of insurers. These Terms of Business ("Terms")
@@ -212,7 +220,7 @@ export function TermsOfBusinessDocument() {
         of our service, please contact us in the first instance:
       </P>
       <Bullet>Email: complaints@daydrive.co.uk</Bullet>
-      <Bullet>Post: Complaints, Day Drive, 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA</Bullet>
+      <Bullet>Post: Complaints, Day Drive, {company.address}</Bullet>
       <Bullet>Telephone: 0333 4330001</Bullet>
       <P>
         We will acknowledge your complaint within 5 business days and aim to resolve it within 8 weeks. If we
@@ -311,7 +319,7 @@ export function TermsOfBusinessDocument() {
       <Rule />
 
       <Text style={s.footer}>
-        Day Drive — 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.
+        Day Drive — {company.address}.
         Day Drive is a trading name of Day Drive Ltd, registered in England and Wales (company number 05044963).
         Authorised and regulated by the Financial Conduct Authority (FCA reference 751221).
         www.daydrive.co.uk

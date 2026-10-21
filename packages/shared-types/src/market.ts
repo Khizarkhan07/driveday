@@ -53,6 +53,9 @@ export interface MarketConfig {
   /** What this market calls the postal code. */
   postalCodeLabel: string;
 
+  /** Company details that appear on documents and in page footers. */
+  company: CompanyDetails;
+
   /**
    * Inserted into issued policy numbers. `null` keeps the original UK format,
    * which must not change — live UK policies carry it.
@@ -100,6 +103,23 @@ export const COUNTRY_PLATES: Record<LookupCountry, CountryPlate> = {
   },
 };
 
+/**
+ * The company identity printed on documents and in footers.
+ *
+ * Only the address varies today. The registration jurisdiction, company number
+ * and regulator still describe the England and Wales entity in both markets —
+ * which is why the Irish address is introduced as an office rather than a
+ * registered office: calling it registered would contradict the registration
+ * the same documents carry.
+ */
+export interface CompanyDetails {
+  address: string;
+  /** Sentence-initial, e.g. "Registered address: …". */
+  addressHeading: string;
+  /** Mid-sentence, e.g. "… Registered office — …". */
+  addressTerm: string;
+}
+
 export const MARKETS: Record<MarketCode, MarketConfig> = {
   uk: {
     code: "uk",
@@ -114,6 +134,11 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
     licenceMessage: "Enter a valid UK driving licence number (e.g. MORGA753116SM9IJ)",
     licencePlaceholder: "MORGA753116SM9IJ",
     postalCodeLabel: "Postcode",
+    company: {
+      address: "37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA",
+      addressHeading: "Registered address",
+      addressTerm: "Registered office",
+    },
     policyNumberPrefix: null,
   },
   ie: {
@@ -131,6 +156,11 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
     licenceMessage: "Enter your driving licence number",
     licencePlaceholder: "",
     postalCodeLabel: "Eircode",
+    company: {
+      address: "31-36 Ormond Quay Upper, Dublin, D07 EE37, Ireland",
+      addressHeading: "Office address",
+      addressTerm: "Office",
+    },
     policyNumberPrefix: "IE",
   },
 };

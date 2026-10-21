@@ -3,6 +3,7 @@ import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import { BUSINESS_COVER_PLATFORMS, type CoverType } from "@motorcover/shared-types";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
+import { MARKETS, type CompanyDetails } from "@motorcover/shared-types";
 
 const styles = StyleSheet.create({
   h1: { marginTop: 14, marginBottom: 4, fontSize: 13, fontWeight: 700, textTransform: "uppercase" },
@@ -77,10 +78,13 @@ function BusinessUseSection() {
 
 export interface PolicyWordingDocumentProps {
   coverType?: CoverType;
+  /** Defaults to the UK company so UK rendering is unchanged. */
+  company?: CompanyDetails;
 }
 
 export function PolicyWordingDocument({
   coverType = "PERSONAL",
+  company = MARKETS.uk.company,
 }: PolicyWordingDocumentProps) {
   return (
     <DemoDocumentLayout title="">
@@ -172,9 +176,9 @@ export function PolicyWordingDocument({
       <Bullet>Object to us processing personal information, under certain circumstances.</Bullet>
       <P>
         If you want to find out more or exercise these rights, contact Day Drive,
-        37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA or email privacy@daydrive.co.uk.
-        You can also contact our Data Protection Officer: Day Drive, 37th Floor, 1 Canada Square,
-        Canary Wharf Estate, London E14 5AA, or via email at dpo@daydrive.co.uk.
+        {company.address} or email privacy@daydrive.co.uk.
+        You can also contact our Data Protection Officer: Day Drive,
+        {company.address}, or via email at dpo@daydrive.co.uk.
       </P>
 
       <H2>How To Make A Complaint</H2>
@@ -188,7 +192,7 @@ export function PolicyWordingDocument({
         Should you be unhappy with the service provided please contact us by phone on
         0330 678 5556 (For Text Phone please dial 18001 first. Opening hours Mon–Fri 9am–5pm).
         If you prefer to write, please address your letter to Complaints, Day Drive,
-        37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.
+        {company.address}.
         Email: complaints@daydrive.co.uk. When contacting us please ensure
         you quote your policy or claim number as appropriate.
       </P>
@@ -752,7 +756,7 @@ export function PolicyWordingDocument({
       <Rule />
 
       <Text style={{ fontSize: 8, color: "#6b7280", marginBottom: 5 }}>
-        Day Drive — 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.
+        Day Drive — {company.address}.
         Underwritten by Highway Insurance Company Limited, registered in England and Wales
         number 3730662. Authorised by the Prudential Regulation Authority and regulated by
         the Financial Conduct Authority and the Prudential Regulation Authority, register

@@ -3,6 +3,7 @@ import { BUSINESS_COVER_PLATFORMS, type CoverType } from "@motorcover/shared-typ
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
 import { SignatureBlock } from "./SignatureBlock";
+import { MARKETS, type CompanyDetails } from "@motorcover/shared-types";
 
 const s = StyleSheet.create({
   root: { marginTop: -22 },
@@ -94,6 +95,8 @@ const s = StyleSheet.create({
 });
 
 export interface CertificateDocumentProps {
+  /** Defaults to the UK company so UK rendering is unchanged. */
+  company?: CompanyDetails;
   policyNumber: string;
   policyholderName: string;
   vehicleRegistration: string;
@@ -104,6 +107,7 @@ export interface CertificateDocumentProps {
 }
 
 export function CertificateDocument({
+  company = MARKETS.uk.company,
   policyNumber,
   policyholderName,
   vehicleRegistration,
@@ -281,7 +285,7 @@ export function CertificateDocument({
           <View style={s.agentRow}>
             <SignatureBlock />
             <Text style={s.agentRole}>Authorised Broker</Text>
-            <Text style={s.agentAddr}>37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA</Text>
+            <Text style={s.agentAddr}>{company.address}</Text>
           </View>
 
           {/* Note */}
@@ -300,7 +304,7 @@ export function CertificateDocument({
         <Text style={s.footerText}>
           Day Drive is a trading name of Day Drive Ltd, registered in England and Wales (company number 05044963).
           Authorised and regulated by the Financial Conduct Authority, FCA reference number 751221.
-          Registered address: 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.
+          {company.addressHeading}: {company.address}.
           Underwritten by Highway Insurance Company Limited, registered in England and Wales number 3730662.
           Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority
           and the Prudential Regulation Authority, register number 202972.

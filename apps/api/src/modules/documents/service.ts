@@ -1,6 +1,7 @@
 import React from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { formatMoney } from "@motorcover/shared-types";
+import { env } from "../../config/env";
 import type { CoverType, DocumentType } from "@motorcover/shared-types";
 import { prisma, logEvent } from "../../db/client";
 import { getDocumentStorage } from "../../providers/storage/factory";
@@ -163,6 +164,7 @@ export async function generatePolicyDocuments(
 
   const certificateBuffer = await renderDocument(
     React.createElement(CertificateDocument, {
+      company: env.market.company,
       coverType,
       policyNumber: policy.policyNumber,
       policyholderName: name,
@@ -175,6 +177,7 @@ export async function generatePolicyDocuments(
 
   const scheduleBuffer = await renderDocument(
     React.createElement(PolicyScheduleDocument, {
+      company: env.market.company,
       policyNumber: policy.policyNumber,
       policyholderName: name,
       insuredAddress,
@@ -208,11 +211,11 @@ export async function generatePolicyDocuments(
   );
 
   const policyWordingBuffer = await renderDocument(
-    React.createElement(PolicyWordingDocument, { coverType })
+    React.createElement(PolicyWordingDocument, { coverType, company: env.market.company })
   );
 
   const tobaBuffer = await renderDocument(
-    React.createElement(TermsOfBusinessDocument)
+    React.createElement(TermsOfBusinessDocument, { company: env.market.company })
   );
 
   const certificate = await persistDocument(policyId, "CERTIFICATE", certificateBuffer);

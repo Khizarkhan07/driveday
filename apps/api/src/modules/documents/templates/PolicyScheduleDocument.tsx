@@ -1,6 +1,7 @@
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
+import { MARKETS, type CompanyDetails } from "@motorcover/shared-types";
 
 const s = StyleSheet.create({
   root: { marginTop: -22 },
@@ -82,6 +83,8 @@ const s = StyleSheet.create({
 });
 
 export interface PolicyScheduleDocumentProps {
+  /** Defaults to the UK company so UK rendering is unchanged. */
+  company?: CompanyDetails;
   policyNumber: string;
   policyholderName: string;
   insuredAddress: string;
@@ -94,6 +97,7 @@ export interface PolicyScheduleDocumentProps {
 }
 
 export function PolicyScheduleDocument({
+  company = MARKETS.uk.company,
   policyNumber,
   policyholderName,
   insuredAddress,
@@ -233,7 +237,7 @@ export function PolicyScheduleDocument({
         <Text style={s.footerLegal}>
           Day Drive is a trading name of Day Drive Ltd, registered in England and Wales (company number 05044963).
           Authorised and regulated by the Financial Conduct Authority, FCA reference number 751221.
-          Registered address: 37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA.
+          {company.addressHeading}: {company.address}.
           Underwritten by Highway Insurance Company Limited, registered in England and Wales number 3730662.
           Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority
           and the Prudential Regulation Authority, register number 202972.
