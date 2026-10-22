@@ -142,3 +142,99 @@ describe("the market table carries the jurisdictions", () => {
     expect(ie.companyNumber).toBeNull();
   });
 });
+
+describe("certificate — website and contact centre", () => {
+  it("keeps the UK site and the (UK) contact centre on a UK certificate", () => {
+    const text = documentText(CertificateDocument, { ...CERT_PROPS, company: uk });
+    expect(text).toContain("daydrive.co.uk");
+    expect(text).toContain("Contact Centre (UK)");
+  });
+
+  it("uses the Irish site and drops the region on an Irish certificate", () => {
+    const text = documentText(CertificateDocument, { ...CERT_PROPS, company: ie });
+    expect(text).toContain("driveday-ie.com");
+    expect(text).toContain("Contact Centre on");
+    expect(text).not.toContain("Contact Centre (UK)");
+  });
+
+  it("never shows the UK site on an Irish certificate", () => {
+    const text = documentText(CertificateDocument, { ...CERT_PROPS, company: ie });
+    // Narrow to the standalone site line; the email addresses on other
+    // documents are a separate decision and still use the UK domain.
+    expect(text).not.toContain(" daydrive.co.uk ");
+  });
+});
+
+/**
+ * documentText joins JSX children with a space, so `privacy@{company.website}`
+ * reads back as "privacy@ daydrive.co.uk". react-pdf concatenates children
+ * without a separator, so the rendered PDF has no space — this matcher
+ * tolerates the helper's artefact rather than weakening the helper, which the
+ * other document tests rely on.
+ */
+const at = (mailbox: string, domain: string) =>
+  new RegExp(`${mailbox}@\\s*${domain.replace(/\./g, "\\.")}`);
+
+describe("website and email domain across every document", () => {
+  it("uses daydrive.co.uk throughout the UK set", () => {
+    for (const text of ukDocs()) expect(text).not.toContain("driveday-ie.com");
+    const wording = documentText(PolicyWordingDocument, { coverType: "PERSONAL", company: uk });
+    expect(wording).toMatch(at("privacy", "daydrive.co.uk"));
+    expect(wording).toMatch(at("dpo", "daydrive.co.uk"));
+    expect(wording).toMatch(at("complaints", "daydrive.co.uk"));
+    const toba = documentText(TermsOfBusinessDocument, { company: uk });
+    expect(toba).toMatch(at("support", "daydrive.co.uk"));
+    expect(toba).toContain("daydrive.co.uk");
+  });
+
+  it("uses driveday-ie.com throughout the Irish set", () => {
+    const wording = documentText(PolicyWordingDocument, { coverType: "PERSONAL", company: ie });
+    expect(wording).toMatch(at("privacy", "driveday-ie.com"));
+    expect(wording).toMatch(at("dpo", "driveday-ie.com"));
+    expect(wording).toMatch(at("complaints", "driveday-ie.com"));
+    const toba = documentText(TermsOfBusinessDocument, { company: ie });
+    expect(toba).toMatch(at("support", "driveday-ie.com"));
+    expect(toba).toContain("driveday-ie.com");
+    expect(documentText(IpidDocument, { ...IPID_PROPS, company: ie })).toContain("driveday-ie.com");
+  });
+
+  /**
+   * These addresses are printed on documents a customer may rely on to make a
+   * complaint, so a domain with no mailbox behind it bounces them.
+   */
+  it("never leaves a UK address or site on an Irish document", () => {
+    for (const text of ieDocs()) expect(text).not.toContain("daydrive.co.uk");
+  });
+});
+
+describe("country wording on the statement of fact", () => {
+  it("describes the UK driver and vehicle exactly as before", () => {
+    const text = documentText(IpidDocument, { ...IPID_PROPS, company: uk });
+    expect(text).toContain("Full UK");
+    expect(text).toContain("Hold a Full United Kingdom driving licence");
+    expect(text).toContain("must be a current UK resident");
+    expect(text).toContain("Full UK Driving Licence");
+    expect(text).toContain("Will be in the UK at the start of the policy");
+  });
+
+  it("describes the Irish driver and vehicle as Irish", () => {
+    const text = documentText(IpidDocument, { ...IPID_PROPS, company: ie });
+    expect(text).toContain("Full Irish");
+    expect(text).toContain("Hold a Full Irish driving licence");
+    expect(text).toContain("an Irish Provisional Drivers licence");
+    expect(text).toContain("must be a current Irish resident");
+    expect(text).toContain("Full Irish Driving Licence");
+    expect(text).toContain("Will be in Ireland at the start of the policy");
+  });
+
+  it("names the right data protection regulator and regime per market", () => {
+    const ukToba = documentText(TermsOfBusinessDocument, { company: uk });
+    expect(ukToba).toContain("Information Commissioner's Office (ICO)");
+    expect(ukToba).toContain("UK General Data Protection Regulation");
+
+    const ieToba = documentText(TermsOfBusinessDocument, { company: ie });
+    expect(ieToba).toContain("Data Protection Commission (DPC)");
+    expect(ieToba).not.toContain("Information Commissioner");
+    expect(ieToba).not.toContain("UK General Data Protection");
+  });
+});

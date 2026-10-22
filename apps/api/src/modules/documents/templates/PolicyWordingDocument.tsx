@@ -108,7 +108,7 @@ export function PolicyWordingDocument({
       <H2>A little bit more about us…</H2>
       <P>
         Your policy is arranged by Day Drive and underwritten by Highway Insurance Company
-        Limited. You can find out more about us at daydrive.co.uk.
+        Limited. You can find out more about us at {company.website}.
       </P>
 
       <Rule />
@@ -165,7 +165,7 @@ export function PolicyWordingDocument({
       <P>
         Highway Insurance Company Limited is the controller of personal information.
         We&apos;ll keep you informed about how we use personal information in the document
-        &apos;Privacy Policy&apos;, which is available online at daydrive.co.uk/privacy-notice.
+        &apos;Privacy Policy&apos;, which is available online at {company.website}/privacy-notice.
       </P>
       <P>You have a number of rights concerning personal information. You can ask for a person to review an automated decision, and in certain circumstances to:</P>
       <Bullet>Access the personal information we hold about you or anyone on the policy.</Bullet>
@@ -176,9 +176,9 @@ export function PolicyWordingDocument({
       <Bullet>Object to us processing personal information, under certain circumstances.</Bullet>
       <P>
         If you want to find out more or exercise these rights, contact Day Drive,
-        {company.address} or email privacy@daydrive.co.uk.
+        {company.address} or email privacy@{company.website}.
         You can also contact our Data Protection Officer: Day Drive,
-        {company.address}, or via email at dpo@daydrive.co.uk.
+        {company.address}, or via email at dpo@{company.website}.
       </P>
 
       <H2>How To Make A Complaint</H2>
@@ -193,7 +193,7 @@ export function PolicyWordingDocument({
         0330 678 5556 (For Text Phone please dial 18001 first. Opening hours Mon–Fri 9am–5pm).
         If you prefer to write, please address your letter to Complaints, Day Drive,
         {company.address}.
-        Email: complaints@daydrive.co.uk. When contacting us please ensure
+        Email: complaints@{company.website}. When contacting us please ensure
         you quote your policy or claim number as appropriate.
       </P>
       <P>
@@ -626,7 +626,7 @@ export function PolicyWordingDocument({
       {/* CLAIMS INFORMATION */}
       <H1>Claims Information</H1>
       <P>
-        We aim to provide you with the best claims service that we can. In the United Kingdom
+        We aim to provide you with the best claims service that we can. In {company.countryFull}
         call us on 0330 678 5659.
       </P>
 

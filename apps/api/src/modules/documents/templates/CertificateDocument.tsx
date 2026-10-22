@@ -123,7 +123,7 @@ export function CertificateDocument({
         {/* ── Emergency notices ── */}
         <View style={s.noticeRow}>
           <Text style={s.noticeBold}>
-            All accidents and losses must be reported immediately to our Contact Centre (UK) on 0330 678 5659.
+            All accidents and losses must be reported immediately to our Contact Centre{company.contactCentreSuffix} on 0330 678 5659.
           </Text>
         </View>
         <View style={s.noticeRow}>
@@ -149,7 +149,7 @@ export function CertificateDocument({
                 to comply with the law. This document is issued by us and confirms that you have a valid
                 insurance policy for your vehicle.
               </Text>
-              <Text style={s.hdrSite}>daydrive.co.uk</Text>
+              <Text style={s.hdrSite}>{company.website}</Text>
             </View>
           </View>
 

@@ -137,6 +137,36 @@ export interface CompanyDetails {
   underwriterJurisdiction: string;
   /** The law and courts named in the Terms of Business. */
   governingLaw: string;
+
+  /** The website printed on documents, without a scheme. */
+  website: string;
+  /**
+   * Appended after "our Contact Centre" on the certificate. The UK certificate
+   * says "Contact Centre (UK)"; the Irish one names no region.
+   */
+  contactCentreSuffix: string;
+
+  /** "United Kingdom" / "Ireland" — formal name in declarations. */
+  countryFull: string;
+  /** "UK" / "Ireland" — short form, e.g. "Country of Issue". */
+  countryShort: string;
+  /** "UK" / "Irish" — adjectival, e.g. "a Full Irish Driving Licence". */
+  countryAdjective: string;
+  /**
+   * With its article where one is needed: "the UK" takes one, "Ireland" does
+   * not. Used mid-sentence, e.g. "will not be exported from the UK".
+   */
+  countryWithArticle: string;
+  /**
+   * The acceptable-licence declaration, in full. Kept whole rather than
+   * assembled from the country name because the article changes with it:
+   * "a United Kingdom Provisional" against "an Irish Provisional".
+   */
+  licenceDeclaration: string;
+  /** The data protection regime named in the Terms of Business. */
+  dataProtectionLaw: string;
+  /** The data protection regulator the company is registered with. */
+  dataProtectionAuthority: string;
 }
 
 export const MARKETS: Record<MarketCode, MarketConfig> = {
@@ -162,6 +192,17 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       webCompanyNumber: "04596433",
       underwriterJurisdiction: "England and Wales",
       governingLaw: "England and Wales",
+      website: "daydrive.co.uk",
+      contactCentreSuffix: " (UK)",
+      countryFull: "United Kingdom",
+      countryShort: "UK",
+      countryAdjective: "UK",
+      countryWithArticle: "the UK",
+      licenceDeclaration:
+        "Hold a Full United Kingdom driving licence, Full EU or Full EEA Driver's License, or a United Kingdom Provisional Drivers licence;",
+      dataProtectionLaw:
+        "UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018",
+      dataProtectionAuthority: "Information Commissioner's Office (ICO)",
     },
     policyNumberPrefix: null,
   },
@@ -191,6 +232,17 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       webCompanyNumber: null,
       underwriterJurisdiction: "Ireland",
       governingLaw: "Ireland",
+      website: "driveday-ie.com",
+      contactCentreSuffix: "",
+      countryFull: "Ireland",
+      countryShort: "Ireland",
+      countryAdjective: "Irish",
+      countryWithArticle: "Ireland",
+      licenceDeclaration:
+        "Hold a Full Irish driving licence, Full EU or Full EEA Driver's License, or an Irish Provisional Drivers licence;",
+      dataProtectionLaw:
+        "General Data Protection Regulation (GDPR) and the Data Protection Act 2018",
+      dataProtectionAuthority: "Data Protection Commission (DPC)",
     },
     policyNumberPrefix: "IE",
   },

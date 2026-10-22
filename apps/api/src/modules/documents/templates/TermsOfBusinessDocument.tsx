@@ -211,7 +211,7 @@ export function TermsOfBusinessDocument({
       </P>
       <P>
         We are happy to assist you in locating the correct claims contact details. Please contact us at
-        support@daydrive.co.uk or call 0333 4330001.
+        support@{company.website} or call 0333 4330001.
       </P>
 
       <H1>13. Complaints</H1>
@@ -219,7 +219,7 @@ export function TermsOfBusinessDocument({
         We are committed to providing the highest level of service. If you are dissatisfied with any aspect
         of our service, please contact us in the first instance:
       </P>
-      <Bullet>Email: complaints@daydrive.co.uk</Bullet>
+      <Bullet>Email: complaints@{company.website}</Bullet>
       <Bullet>Post: Complaints, Day Drive, {company.address}</Bullet>
       <Bullet>Telephone: 0333 4330001</Bullet>
       <P>
@@ -268,9 +268,8 @@ export function TermsOfBusinessDocument({
 
       <H1>17. Confidentiality and Data Protection</H1>
       <P>
-        Day Drive is registered as a data controller with the Information Commissioner's Office (ICO).
-        We collect and process personal data in accordance with the UK General Data Protection Regulation
-        (UK GDPR) and the Data Protection Act 2018.
+        Day Drive is registered as a data controller with the {company.dataProtectionAuthority}.
+        We collect and process personal data in accordance with the {company.dataProtectionLaw}.
       </P>
       <P>
         Your personal data will be used to arrange and administer your insurance policy, process claims,
@@ -280,11 +279,11 @@ export function TermsOfBusinessDocument({
       <P>
         We will not sell your personal data to third parties for marketing purposes without your explicit
         consent. For full details of how we use your data, please refer to our Privacy Policy available at
-        www.daydrive.co.uk/privacy.
+        www.{company.website}/privacy.
       </P>
       <P>
         You have the right to access, correct, or request deletion of your personal data. To exercise your
-        rights, contact us at privacy@daydrive.co.uk.
+        rights, contact us at privacy@{company.website}.
       </P>
 
       <H1>18. Consent</H1>
@@ -294,7 +293,7 @@ export function TermsOfBusinessDocument({
         as necessary to arrange and administer your policy.
       </P>
       <P>
-        You may withdraw consent at any time by contacting us at privacy@daydrive.co.uk. Note that withdrawing
+        You may withdraw consent at any time by contacting us at privacy@{company.website}. Note that withdrawing
         consent may affect our ability to provide services to you.
       </P>
 
@@ -322,7 +321,7 @@ export function TermsOfBusinessDocument({
         Day Drive — {company.address}.
         Day Drive is a trading name of Day Drive Ltd, registered in {company.registrationJurisdiction}{company.companyNumber ? ` (company number ${company.companyNumber})` : ""}.
         Authorised and regulated by the Financial Conduct Authority (FCA reference 751221).
-        www.daydrive.co.uk
+        www.{company.website}
       </Text>
       <Text style={s.updated}>Last updated: 19 May 2023</Text>
     </DemoDocumentLayout>

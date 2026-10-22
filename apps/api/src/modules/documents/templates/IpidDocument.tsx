@@ -1,3 +1,4 @@
+import React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 import { MARKETS, type CompanyDetails } from "@motorcover/shared-types";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
@@ -75,7 +76,9 @@ function TableRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DeclItem({ letter, children }: { letter: string; children: string }) {
+// ReactNode rather than string: a declaration that interpolates a value
+// arrives as an array of children.
+function DeclItem({ letter, children }: { letter: string; children: React.ReactNode }) {
   return (
     <View style={s.declItem}>
       <Text style={s.declLetter}>{letter}.</Text>
@@ -140,8 +143,8 @@ export function IpidDocument({
               <TableRow label="Address 2:" value={address2} />
               <TableRow label="DOB:" value={dateOfBirth} />
               <TableRow label="Occupation:" value="—" />
-              <TableRow label="Licence Type:" value="Full UK" />
-              <TableRow label="Country of Issue:" value="UK" />
+              <TableRow label="Licence Type:" value={`Full ${company.countryAdjective}`} />
+              <TableRow label="Country of Issue:" value={company.countryShort} />
               <TableRow label="Length of Licence:" value={`${yearsHeldLicence} Years`} />
             </View>
             <View style={s.tableRule} />
@@ -176,8 +179,8 @@ export function IpidDocument({
               <Text style={s.declTopNumText}>I declare that I and any named driver:</Text>
             </View>
             <DeclItem letter="a">Are aged between 17 and 75 years of age;</DeclItem>
-            <DeclItem letter="b">Hold a Full United Kingdom driving licence, Full EU or Full EEA Driver's License, or a United Kingdom Provisional Drivers licence;</DeclItem>
-            <DeclItem letter="c">That holds an EU Driving Licence must be a current UK resident, with a minimum length of residency of 12 consecutive months in the 1 year prior to inception;</DeclItem>
+            <DeclItem letter="b">{company.licenceDeclaration}</DeclItem>
+            <DeclItem letter="c">That holds an EU Driving Licence must be a current {company.countryAdjective} resident, with a minimum length of residency of 12 consecutive months in the 1 year prior to inception;</DeclItem>
             <DeclItem letter="d">Are not aware of any pending prosecution or Police enquiry pending for any motoring offences;</DeclItem>
             <DeclItem letter="e">Have no more than 6 penalty points on their driving licence following motoring convictions;</DeclItem>
             <DeclItem letter="f">Have not had any of the following conviction codes DR, CD, DD, UT & DG or have any motoring conviction that has a driving ban in the last 5 years;</DeclItem>
@@ -186,7 +189,7 @@ export function IpidDocument({
             <DeclItem letter="i">Have not had a motor insurance policy cancelled, voided, refused or had a premium increase;</DeclItem>
 
             {/* Footer */}
-            <Text style={s.footerSite}>daydrive.co.uk</Text>
+            <Text style={s.footerSite}>{company.website}</Text>
             <Text style={s.footerLegal}>
               Day Drive is a trading name of Day Drive Ltd registered in {company.registrationJurisdiction}.{"\n"}
               {company.companyNumber ? `Company Registration Number ${company.companyNumber}. ` : ""}
@@ -201,7 +204,7 @@ export function IpidDocument({
 
             <DeclItem letter="j">Do not live in any of the following; Squat, Static Caravan, Caravan, Barge, House Boat or No fixed Abode/address.</DeclItem>
             <DeclItem letter="k">Have no additional employment or occupation outside of that disclosed for the purposes of obtaining this insurance.</DeclItem>
-            <DeclItem letter="l">That holds a Full UK Driving Licence and is aged between 18 and 20 years of age is prohibited from carrying passengers in the insured vehicle.</DeclItem>
+            <DeclItem letter="l">That holds a Full {company.countryAdjective} Driving Licence and is aged between 18 and 20 years of age is prohibited from carrying passengers in the insured vehicle.</DeclItem>
 
             {/* Section 2 */}
             <View style={[s.declTopNum, { marginTop: 6 }]}>
@@ -221,7 +224,7 @@ export function IpidDocument({
             <DeclItem letter="k">Has not been recorded as a Category A or B insurance total loss.</DeclItem>
             <DeclItem letter="l">Is not a Q plated vehicle.</DeclItem>
             <DeclItem letter="m">Is registered in Great Britain, Northern Ireland or the Isle of Man;</DeclItem>
-            <DeclItem letter="n">Will be in the UK at the start of the policy and will not be exported from the UK during the duration of the policy;</DeclItem>
+            <DeclItem letter="n">Will be in {company.countryWithArticle} at the start of the policy and will not be exported from {company.countryWithArticle} during the duration of the policy;</DeclItem>
             <DeclItem letter="o">Has a current market value not exceeding £65,000. For drivers under 25 years of age this is limited to £50,000. The minimum vehicle value is £500.</DeclItem>
 
             {/* Items 3–8 */}
