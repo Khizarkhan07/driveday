@@ -47,6 +47,12 @@ export const env = {
   emailFrom: process.env.EMAIL_FROM ?? "Day Drive <onboarding@resend.dev>",
 
   documentStorage: (process.env.DOCUMENT_STORAGE ?? "local") as "local" | "s3" | "blob",
+  /**
+   * Access mode of the Vercel Blob store, which is fixed when the store is
+   * created. Defaults to public because the UK store is public; a private
+   * store must set this or every document write fails.
+   */
+  blobAccess: (process.env.BLOB_ACCESS ?? "public") as "public" | "private",
   localDocsDir: process.env.LOCAL_DOCS_DIR ?? "storage",
   s3Bucket: process.env.S3_BUCKET,
   s3Region: process.env.S3_REGION,

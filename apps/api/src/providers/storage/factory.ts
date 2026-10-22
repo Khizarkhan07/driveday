@@ -9,7 +9,7 @@ let cached: DocumentStorage | undefined;
 export function getDocumentStorage(): DocumentStorage {
   if (cached) return cached;
   if (env.documentStorage === "s3") cached = new S3Storage();
-  else if (env.documentStorage === "blob") cached = new VercelBlobStorage();
+  else if (env.documentStorage === "blob") cached = new VercelBlobStorage(env.blobAccess);
   else cached = new LocalDiskStorage();
   return cached;
 }
