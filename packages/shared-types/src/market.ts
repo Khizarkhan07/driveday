@@ -168,10 +168,11 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
   ie: {
     code: "ie",
     country: "ie",
-    currency: "eur",
+    // Charged in sterling, like the UK: the Irish Stripe account settles in
+    // GBP and the documents' limits and excesses are all sterling figures.
+    currency: "gbp",
     locale: "en-IE",
     timeZone: "Europe/Dublin",
-    // Same figures as the UK, denominated in euro.
     coverTypeRates: { PERSONAL: 1500, BUSINESS: 2500 },
     // Ireland has its own documents and never searches the UK register.
     lookupCountries: ["ie"],

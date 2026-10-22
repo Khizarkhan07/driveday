@@ -43,8 +43,10 @@ describe("market configuration", () => {
   });
 
   it("prices both cover types the same figures in each market's currency", () => {
+    // Both markets charge in sterling; euro remains supported by the
+    // formatter and the schema should the Irish market ever switch.
     expect(marketFor("uk").currency).toBe("gbp");
-    expect(marketFor("ie").currency).toBe("eur");
+    expect(marketFor("ie").currency).toBe("gbp");
     for (const code of MARKET_CODES) {
       expect(marketFor(code).coverTypeRates).toEqual({ PERSONAL: 1500, BUSINESS: 2500 });
     }

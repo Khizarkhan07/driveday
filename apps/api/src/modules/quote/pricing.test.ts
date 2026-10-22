@@ -57,32 +57,41 @@ describe("calculatePremium — UK market", () => {
 });
 
 describe("calculatePremium — Irish market", () => {
-  it("charges €15 for personal cover", () => {
+  it("charges £15 for personal cover", () => {
     const b = calculatePremium({ coverType: "PERSONAL" }, ie);
     expect(b.totalPence).toBe(1500);
-    expect(b.currency).toBe("eur");
+    expect(b.currency).toBe("gbp");
   });
 
-  it("charges €25 for business cover", () => {
+  it("charges £25 for business cover", () => {
     const b = calculatePremium({ coverType: "BUSINESS" }, ie);
     expect(b.totalPence).toBe(2500);
-    expect(b.currency).toBe("eur");
+    expect(b.currency).toBe("gbp");
   });
 
-  it("falls back to the personal rate for an unrecognised cover type, in euro", () => {
+  it("falls back to the personal rate for an unrecognised cover type", () => {
     const b = calculatePremium({ coverType: "spaceship" as never }, ie);
     expect(b.totalPence).toBe(1500);
-    expect(b.currency).toBe("eur");
+    expect(b.currency).toBe("gbp");
   });
 });
 
-describe("calculatePremium — markets do not leak into each other", () => {
-  it("quotes the same figures but never the same currency", () => {
+describe("calculatePremium — every market quotes its own configured currency", () => {
+  it("reads the currency from the market rather than assuming one", () => {
     for (const coverType of ["PERSONAL", "BUSINESS"] as const) {
-      const a = calculatePremium({ coverType }, uk);
-      const b = calculatePremium({ coverType }, ie);
-      expect(a.totalPence).toBe(b.totalPence);
-      expect(a.currency).not.toBe(b.currency);
+      expect(calculatePremium({ coverType }, uk).currency).toBe(uk.currency);
+      expect(calculatePremium({ coverType }, ie).currency).toBe(ie.currency);
+    }
+  });
+
+  // Both markets happen to charge the same figures in the same currency, so
+  // this is the assertion that would catch one drifting from its config.
+  it("charges the figures its own market defines", () => {
+    for (const market of [uk, ie]) {
+      expect(calculatePremium({ coverType: "PERSONAL" }, market).totalPence)
+        .toBe(market.coverTypeRates.PERSONAL);
+      expect(calculatePremium({ coverType: "BUSINESS" }, market).totalPence)
+        .toBe(market.coverTypeRates.BUSINESS);
     }
   });
 });
