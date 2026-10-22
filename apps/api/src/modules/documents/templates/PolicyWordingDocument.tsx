@@ -757,8 +757,8 @@ export function PolicyWordingDocument({
 
       <Text style={{ fontSize: 8, color: "#6b7280", marginBottom: 5 }}>
         Day Drive — {company.address}.
-        Underwritten by Highway Insurance Company Limited, registered in England and Wales
-        number 3730662. Authorised by the Prudential Regulation Authority and regulated by
+        Underwritten by Highway Insurance Company Limited, registered in
+        {" "}{company.underwriterJurisdiction} number 3730662. Authorised by the Prudential Regulation Authority and regulated by
         the Financial Conduct Authority and the Prudential Regulation Authority, register
         number 202972. Reference: 0039918-2024.
       </Text>

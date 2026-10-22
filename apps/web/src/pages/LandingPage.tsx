@@ -467,7 +467,7 @@ export function LandingPage() {
           <img src="/daydrive-logo-white.svg" alt="DayDrive" className="h-9 w-auto" />
           <div className="mt-5 space-y-2 max-w-3xl text-paper/60">
             <p>Daydrive™ is a registered trademark © 2023 Daydrive.co.uk Limited. Authorised and regulated by the Financial Conduct Authority Firm Reference Number 407863.</p>
-            <p>Registered in England and Wales under Company Registration Number 04596433. {market.company.addressTerm} — {market.company.address}.</p>
+            <p>Registered in {market.company.registrationJurisdiction}{market.company.webCompanyNumber ? ` under Company Registration Number ${market.company.webCompanyNumber}` : ""}. {market.company.addressTerm} — {market.company.address}.</p>
           </div>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-paper/70 font-medium">
             <a href="/privacy.html" className="hover:text-mint transition">Privacy Policy</a>

@@ -1,4 +1,5 @@
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { MARKETS, type CompanyDetails } from "@motorcover/shared-types";
 import { DemoDocumentLayout } from "./DemoDocumentLayout";
 import { DayDriveLogo } from "./DayDriveLogo";
 
@@ -46,6 +47,8 @@ const s = StyleSheet.create({
 });
 
 export interface IpidDocumentProps {
+  /** Defaults to the UK company so UK rendering is unchanged. */
+  company?: CompanyDetails;
   policyNumber: string;
   policyholderName: string;
   userEmail: string;
@@ -82,6 +85,7 @@ function DeclItem({ letter, children }: { letter: string; children: string }) {
 }
 
 export function IpidDocument({
+  company = MARKETS.uk.company,
   policyholderName,
   userEmail,
   addressLine1,
@@ -184,8 +188,9 @@ export function IpidDocument({
             {/* Footer */}
             <Text style={s.footerSite}>daydrive.co.uk</Text>
             <Text style={s.footerLegal}>
-              Day Drive is a trading name of Day Drive Ltd registered in England and Wales.{"\n"}
-              Company Registration Number 05044963. Data Protection Registration ZA456686.{"\n"}
+              Day Drive is a trading name of Day Drive Ltd registered in {company.registrationJurisdiction}.{"\n"}
+              {company.companyNumber ? `Company Registration Number ${company.companyNumber}. ` : ""}
+              Data Protection Registration ZA456686.{"\n"}
               Authorised and regulated by the Financial Conduct Authority under reference 751221.
             </Text>
 

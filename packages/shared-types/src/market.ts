@@ -106,11 +106,14 @@ export const COUNTRY_PLATES: Record<LookupCountry, CountryPlate> = {
 /**
  * The company identity printed on documents and in footers.
  *
- * Only the address varies today. The registration jurisdiction, company number
- * and regulator still describe the England and Wales entity in both markets —
- * which is why the Irish address is introduced as an office rather than a
- * registered office: calling it registered would contradict the registration
- * the same documents carry.
+ * The Irish market states Ireland as the place of registration and as the
+ * governing law, by the product owner's decision. The regulator named on the
+ * documents is still the FCA in both markets, so the Irish address is
+ * introduced as an office rather than a registered office.
+ *
+ * `companyNumber` is null for Ireland because 05044963 is a Companies House
+ * number: printing it beside an Irish registration would state something
+ * untrue. Supply a CRO number and the documents will carry it.
  */
 export interface CompanyDetails {
   address: string;
@@ -118,6 +121,22 @@ export interface CompanyDetails {
   addressHeading: string;
   /** Mid-sentence, e.g. "… Registered office — …". */
   addressTerm: string;
+
+  /** Where Day Drive Ltd is stated to be registered. */
+  registrationJurisdiction: string;
+  /**
+   * Company registration number as printed on documents. `null` where no
+   * number is known for that jurisdiction — a UK Companies House number
+   * alongside an Irish registration would state something untrue, so the
+   * Irish documents omit it until a CRO number is supplied.
+   */
+  companyNumber: string | null;
+  /** The same, for the footer on the web app, which cites a different number. */
+  webCompanyNumber: string | null;
+  /** Where the underwriter is stated to be registered. */
+  underwriterJurisdiction: string;
+  /** The law and courts named in the Terms of Business. */
+  governingLaw: string;
 }
 
 export const MARKETS: Record<MarketCode, MarketConfig> = {
@@ -138,6 +157,11 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       address: "37th Floor, 1 Canada Square, Canary Wharf Estate, London E14 5AA",
       addressHeading: "Registered address",
       addressTerm: "Registered office",
+      registrationJurisdiction: "England and Wales",
+      companyNumber: "05044963",
+      webCompanyNumber: "04596433",
+      underwriterJurisdiction: "England and Wales",
+      governingLaw: "England and Wales",
     },
     policyNumberPrefix: null,
   },
@@ -160,6 +184,12 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       address: "31-36 Ormond Quay Upper, Dublin, D07 EE37, Ireland",
       addressHeading: "Office address",
       addressTerm: "Office",
+      registrationJurisdiction: "Ireland",
+      // No Irish CRO number supplied; omitted rather than reusing the UK one.
+      companyNumber: null,
+      webCompanyNumber: null,
+      underwriterJurisdiction: "Ireland",
+      governingLaw: "Ireland",
     },
     policyNumberPrefix: "IE",
   },

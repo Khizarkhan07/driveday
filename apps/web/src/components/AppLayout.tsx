@@ -67,7 +67,7 @@ export function AppLayout() {
 
       <footer className="border-t border-ink/8 py-6 px-4 text-center text-xs text-ink/40 space-y-1">
         <p>Daydrive™ is a registered trademark © 2023 Daydrive.co.uk Limited. Authorised and regulated by the Financial Conduct Authority Firm Reference Number 407863.</p>
-        <p>Registered in England and Wales under Company Registration Number 04596433. {market.company.addressTerm} — {market.company.address}.</p>
+        <p>Registered in {market.company.registrationJurisdiction}{market.company.webCompanyNumber ? ` under Company Registration Number ${market.company.webCompanyNumber}` : ""}. {market.company.addressTerm} — {market.company.address}.</p>
       </footer>
     </div>
   );

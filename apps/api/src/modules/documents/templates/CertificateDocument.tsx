@@ -302,10 +302,10 @@ export function CertificateDocument({
 
         {/* Page footer legal text */}
         <Text style={s.footerText}>
-          Day Drive is a trading name of Day Drive Ltd, registered in England and Wales (company number 05044963).
+          Day Drive is a trading name of Day Drive Ltd, registered in {company.registrationJurisdiction}{company.companyNumber ? ` (company number ${company.companyNumber})` : ""}.
           Authorised and regulated by the Financial Conduct Authority, FCA reference number 751221.
           {company.addressHeading}: {company.address}.
-          Underwritten by Highway Insurance Company Limited, registered in England and Wales number 3730662.
+          Underwritten by Highway Insurance Company Limited, registered in {company.underwriterJurisdiction} number 3730662.
           Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority
           and the Prudential Regulation Authority, register number 202972.
         </Text>

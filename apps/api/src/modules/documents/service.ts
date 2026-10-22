@@ -192,6 +192,7 @@ export async function generatePolicyDocuments(
 
   const ipidBuffer = await renderDocument(
     React.createElement(IpidDocument, {
+      company: env.market.company,
       policyNumber: policy.policyNumber,
       policyholderName: name,
       userEmail: policy.user.email,

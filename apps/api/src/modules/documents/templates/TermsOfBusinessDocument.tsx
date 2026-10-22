@@ -44,7 +44,7 @@ export function TermsOfBusinessDocument({
         </View>
       </View>
       <P>
-        Day Drive is a trading name of Day Drive Ltd, registered in England and Wales (company number 05044963),
+        Day Drive is a trading name of Day Drive Ltd, registered in {company.registrationJurisdiction}{company.companyNumber ? ` (company number ${company.companyNumber})` : ""},
         authorised and regulated by the Financial Conduct Authority (FCA reference number 751221).
         Our {company.addressHeading.toLowerCase()} is: {company.address}.
       </P>
@@ -306,9 +306,9 @@ export function TermsOfBusinessDocument({
 
       <H1>20. Governing Law</H1>
       <P>
-        These Terms of Business are governed by and construed in accordance with the laws of England and Wales.
+        These Terms of Business are governed by and construed in accordance with the laws of {company.governingLaw}.
         Any disputes arising out of or in connection with these Terms shall be subject to the exclusive
-        jurisdiction of the courts of England and Wales, except where you are entitled to bring proceedings
+        jurisdiction of the courts of {company.governingLaw}, except where you are entitled to bring proceedings
         in another jurisdiction.
       </P>
       <P>
@@ -320,7 +320,7 @@ export function TermsOfBusinessDocument({
 
       <Text style={s.footer}>
         Day Drive — {company.address}.
-        Day Drive is a trading name of Day Drive Ltd, registered in England and Wales (company number 05044963).
+        Day Drive is a trading name of Day Drive Ltd, registered in {company.registrationJurisdiction}{company.companyNumber ? ` (company number ${company.companyNumber})` : ""}.
         Authorised and regulated by the Financial Conduct Authority (FCA reference 751221).
         www.daydrive.co.uk
       </Text>
