@@ -1,4 +1,5 @@
 import { View, Text, Svg, Path, Line, StyleSheet } from "@react-pdf/renderer";
+import { MARKETS, type CompanyDetails } from "@motorcover/shared-types";
 
 const s = StyleSheet.create({
   container: { flexDirection: "row", alignItems: "center" },
@@ -7,15 +8,18 @@ const s = StyleSheet.create({
   day: { fontWeight: 700, color: "#081B3A" },
   drive: { fontWeight: 700, color: "#0047FF" },
   sub: { color: "#5C6B82" },
+  market: { fontWeight: 700, color: "#0047FF" },
   rule: { backgroundColor: "#D9E2F2", height: 1, marginTop: 2 },
 });
 
 interface DayDriveLogoProps {
   /** Overall height in points — width scales proportionally. Default 50. */
   height?: number;
+  /** Defaults to the UK company, whose mark carries no market line. */
+  company?: CompanyDetails;
 }
 
-export function DayDriveLogo({ height = 50 }: DayDriveLogoProps) {
+export function DayDriveLogo({ height = 50, company = MARKETS.uk.company }: DayDriveLogoProps) {
   const iconW = height * 0.78;
   const nameSize = height * 0.30;
   const subSize  = height * 0.115;
@@ -69,6 +73,11 @@ export function DayDriveLogo({ height = 50 }: DayDriveLogoProps) {
           <Text style={[s.day,  { fontSize: nameSize }]}>DAY</Text>
           <Text style={[s.drive, { fontSize: nameSize }]}> DRIVE</Text>
         </View>
+        {company.logoMarketLine && (
+          <Text style={[s.market, { fontSize: height * 0.17, letterSpacing: 1.4 }]}>
+            {company.logoMarketLine}
+          </Text>
+        )}
         <Text style={[s.sub, { fontSize: subSize, letterSpacing: 1.8 }]}>
           AUTO INSURANCE
         </Text>

@@ -138,6 +138,11 @@ export interface CompanyDetails {
   /** The law and courts named in the Terms of Business. */
   governingLaw: string;
 
+  /**
+   * The market line in the logo, set in the brand blue between the wordmark
+   * and the descriptor. `null` leaves the mark as the wordmark alone.
+   */
+  logoMarketLine: string | null;
   /** The website printed on documents, without a scheme. */
   website: string;
   /**
@@ -199,6 +204,7 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       webCompanyNumber: "04596433",
       underwriterJurisdiction: "England and Wales",
       governingLaw: "England and Wales",
+      logoMarketLine: null,
       website: "daydrive.co.uk",
       tradingEntity: "Daydrive.co.uk Limited",
       contactCentreSuffix: " (UK)",
@@ -239,6 +245,7 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       webCompanyNumber: null,
       underwriterJurisdiction: "Ireland",
       governingLaw: "Ireland",
+      logoMarketLine: "IRELAND",
       website: "driveday-ie.com",
       tradingEntity: "Driveday-ie.com Limited",
       contactCentreSuffix: "",

@@ -238,3 +238,29 @@ describe("country wording on the statement of fact", () => {
     expect(ieToba).not.toContain("UK General Data Protection");
   });
 });
+
+describe("logo market line", () => {
+  // The PDF header redraws the mark itself rather than using the SVG files,
+  // so it has to be told the market or Irish documents carry the UK logo.
+  it("shows IRELAND in the mark on every Irish document", () => {
+    expect(documentText(CertificateDocument, { ...CERT_PROPS, company: ie })).toContain("IRELAND");
+    expect(documentText(PolicyScheduleDocument, { ...SCHEDULE_PROPS, company: ie })).toContain("IRELAND");
+    expect(documentText(IpidDocument, { ...IPID_PROPS, company: ie })).toContain("IRELAND");
+    expect(documentText(TermsOfBusinessDocument, { company: ie })).toContain("IRELAND");
+    expect(documentText(PolicyWordingDocument, { coverType: "PERSONAL", company: ie })).toContain("IRELAND");
+  });
+
+  it("leaves the UK mark as the wordmark alone", () => {
+    expect(uk.logoMarketLine).toBeNull();
+    expect(ie.logoMarketLine).toBe("IRELAND");
+    // "IRELAND" in caps appears nowhere in the UK logo; the wording elsewhere
+    // uses "Ireland" in sentence case, so caps is a safe probe.
+    expect(documentText(TermsOfBusinessDocument, { company: uk })).not.toContain("IRELAND");
+  });
+
+  it("keeps the descriptor in both markets", () => {
+    for (const c of [uk, ie]) {
+      expect(documentText(TermsOfBusinessDocument, { company: c })).toContain("AUTO INSURANCE");
+    }
+  });
+});

@@ -114,7 +114,7 @@ export function PolicyScheduleDocument({
 
         {/* ── Header ── */}
         <View style={s.hdr}>
-          <DayDriveLogo height={52} />
+          <DayDriveLogo height={52} company={company} />
           <View style={s.hdrTitle}>
             <Text style={s.hdrTitleMain}>DAY DRIVE INSURANCE</Text>
             <Text style={s.hdrTitleSub}>SCHEDULE</Text>

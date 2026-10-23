@@ -89,7 +89,7 @@ export function PolicyWordingDocument({
   return (
     <DemoDocumentLayout title="">
       <View style={{ marginTop: -20, flexDirection: "row", alignItems: "center", borderBottomWidth: 1, borderBottomColor: "#e5e7eb", paddingBottom: 8, marginBottom: 10 }}>
-        <DayDriveLogo height={45} />
+        <DayDriveLogo height={45} company={company} />
         <View style={{ flex: 1, paddingLeft: 12 }}>
           <Text style={{ fontSize: 13, fontWeight: 700, color: "#081B3A" }}>Day Drive — Short Term Policy Wording</Text>
           <Text style={{ fontSize: 9, color: "#6b7280", marginTop: 2 }}>Underwritten by Highway Insurance Company Limited</Text>

@@ -140,7 +140,7 @@ export function CertificateDocument({
           {/* Header: Day Drive brand | Certificate title + description */}
           <View style={s.hdrRow}>
             <View style={s.hdrBrand}>
-              <DayDriveLogo height={44} />
+              <DayDriveLogo height={44} company={company} />
             </View>
             <View style={s.hdrTitle}>
               <Text style={s.hdrTitleText}>CERTIFICATE OF MOTOR INSURANCE</Text>

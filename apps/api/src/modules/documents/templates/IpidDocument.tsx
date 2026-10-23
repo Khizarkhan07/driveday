@@ -116,7 +116,7 @@ export function IpidDocument({
 
             {/* Logo + doc title */}
             <View style={s.hdr}>
-              <DayDriveLogo height={48} />
+              <DayDriveLogo height={48} company={company} />
               <Text style={s.docTitle}>Statement of fact - Day Drive Short Term Motor</Text>
             </View>
 
