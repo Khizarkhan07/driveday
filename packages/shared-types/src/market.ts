@@ -141,6 +141,13 @@ export interface CompanyDetails {
   /** The website printed on documents, without a scheme. */
   website: string;
   /**
+   * The entity named in the trademark line, which follows the market's domain.
+   * Held as a value rather than derived from `website` because a legal entity
+   * name is not really a function of a domain — if an Irish company is
+   * registered under a different name, this is the one place to change.
+   */
+  tradingEntity: string;
+  /**
    * Appended after "our Contact Centre" on the certificate. The UK certificate
    * says "Contact Centre (UK)"; the Irish one names no region.
    */
@@ -193,6 +200,7 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       underwriterJurisdiction: "England and Wales",
       governingLaw: "England and Wales",
       website: "daydrive.co.uk",
+      tradingEntity: "Daydrive.co.uk Limited",
       contactCentreSuffix: " (UK)",
       countryFull: "United Kingdom",
       countryShort: "UK",
@@ -209,12 +217,11 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
   ie: {
     code: "ie",
     country: "ie",
-    // Charged in sterling, like the UK: the Irish Stripe account settles in
-    // GBP and the documents' limits and excesses are all sterling figures.
-    currency: "gbp",
+    currency: "eur",
     locale: "en-IE",
     timeZone: "Europe/Dublin",
-    coverTypeRates: { PERSONAL: 1500, BUSINESS: 2500 },
+    // Priced independently of the UK: €18 personal, €30 business.
+    coverTypeRates: { PERSONAL: 1800, BUSINESS: 3000 },
     // Ireland has its own documents and never searches the UK register.
     lookupCountries: ["ie"],
     // No supplied Irish format, and inventing one would reject valid licences.
@@ -233,6 +240,7 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
       underwriterJurisdiction: "Ireland",
       governingLaw: "Ireland",
       website: "driveday-ie.com",
+      tradingEntity: "Driveday-ie.com Limited",
       contactCentreSuffix: "",
       countryFull: "Ireland",
       countryShort: "Ireland",

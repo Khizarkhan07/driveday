@@ -57,22 +57,22 @@ describe("calculatePremium — UK market", () => {
 });
 
 describe("calculatePremium — Irish market", () => {
-  it("charges £15 for personal cover", () => {
+  it("charges €18 for personal cover", () => {
     const b = calculatePremium({ coverType: "PERSONAL" }, ie);
-    expect(b.totalPence).toBe(1500);
-    expect(b.currency).toBe("gbp");
+    expect(b.totalPence).toBe(1800);
+    expect(b.currency).toBe("eur");
   });
 
-  it("charges £25 for business cover", () => {
+  it("charges €30 for business cover", () => {
     const b = calculatePremium({ coverType: "BUSINESS" }, ie);
-    expect(b.totalPence).toBe(2500);
-    expect(b.currency).toBe("gbp");
+    expect(b.totalPence).toBe(3000);
+    expect(b.currency).toBe("eur");
   });
 
   it("falls back to the personal rate for an unrecognised cover type", () => {
     const b = calculatePremium({ coverType: "spaceship" as never }, ie);
-    expect(b.totalPence).toBe(1500);
-    expect(b.currency).toBe("gbp");
+    expect(b.totalPence).toBe(1800);
+    expect(b.currency).toBe("eur");
   });
 });
 
@@ -84,8 +84,6 @@ describe("calculatePremium — every market quotes its own configured currency",
     }
   });
 
-  // Both markets happen to charge the same figures in the same currency, so
-  // this is the assertion that would catch one drifting from its config.
   it("charges the figures its own market defines", () => {
     for (const market of [uk, ie]) {
       expect(calculatePremium({ coverType: "PERSONAL" }, market).totalPence)

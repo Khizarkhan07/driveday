@@ -139,7 +139,7 @@ export function LandingPage() {
               </div>
               <div className="text-sm">
                 <div className="text-amber-500 leading-none">★★★★★</div>
-                <div className="text-ink/55 mt-0.5">Rated excellent by UK drivers</div>
+                <div className="text-ink/55 mt-0.5">Rated excellent by {market.company.countryAdjective} drivers</div>
               </div>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-ink/55">
@@ -287,7 +287,7 @@ export function LandingPage() {
             </div>
           </div>
           <div className="rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
-            <img src="https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?auto=format&fit=crop&w=900&q=75" alt="Everyday UK hatchback" className="w-full h-80 object-cover" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?auto=format&fit=crop&w=900&q=75" alt={`Everyday ${market.company.countryAdjective} hatchback`} className="w-full h-80 object-cover" loading="lazy" />
           </div>
         </div>
       </section>
@@ -329,7 +329,7 @@ export function LandingPage() {
           <div className="reveal rounded-2xl bg-ink/[.03] ring-1 ring-ink/10 p-8">
             <h3 className="font-display text-2xl font-semibold flex items-center gap-2"><span className="text-ink/40">✗</span> What's not covered</h3>
             <ul className="mt-5 space-y-3 text-ink/70">
-              {["Racing, track days, rallies", "Hire and reward (deliveries, taxi work)", "Driving other cars not named on the policy", "Anything dishonest — the car must be roadworthy, taxed and MOT'd"].map((item) => (
+              {["Racing, track days, rallies", "Driving other cars not named on the policy"].map((item) => (
                 <li key={item} className="flex gap-3"><span className="text-ink/35 font-bold shrink-0">✗</span> {item}</li>
               ))}
             </ul>
@@ -344,12 +344,11 @@ export function LandingPage() {
           <h2 className="font-display text-4xl sm:text-5xl font-semibold mt-3">Can I get a policy?</h2>
           <p className="mt-4 text-ink/65 text-lg">You can get 1-day cover with DayDrive if you:</p>
           <div className="mt-6 grid sm:grid-cols-2 gap-3">
-            {["Are aged 19 to 75", "Held a full UK/EU licence for 6+ months"].map((item) => (
+            {["Are aged 17+", `Hold a full ${market.company.countryAdjective} or EU licence`].map((item) => (
               <div key={item} className="bg-white rounded-xl p-4 ring-1 ring-ink/5 flex gap-3"><span className="text-mint-700 shrink-0">✓</span> {item}</div>
             ))}
-            <div className="bg-white rounded-xl p-4 ring-1 ring-ink/5 flex gap-3 sm:col-span-2"><span className="text-mint-700 shrink-0">✓</span> Insuring a car, bike, van, quad or motorhome worth under £65,000</div>
+            <div className="bg-white rounded-xl p-4 ring-1 ring-ink/5 flex gap-3 sm:col-span-2"><span className="text-mint-700 shrink-0">✓</span> Insuring a car, bike, van, quad or motorhome</div>
           </div>
-          <p className="mt-5 text-ink/60">The vehicle needs valid tax and MOT. That's it.</p>
         </div>
       </section>
 
@@ -413,7 +412,7 @@ export function LandingPage() {
               { title: "No no-claims risk", body: "Your policy is separate. If anything happens, the owner's bonus is untouched." },
               { title: "Cover to the minute", body: 'Start at 2pm, not "sometime today". You choose the exact start time.' },
               { title: "Honest pricing", body: "The price you see is the price you pay. No fees appearing at the last step." },
-              { title: "UK support", body: "Real people if something goes wrong, seven days a week." },
+              { title: `${market.company.countryAdjective} support`, body: "Real people if something goes wrong, seven days a week." },
             ].map((f) => (
               <div key={f.title} className="reveal bg-white rounded-2xl p-6 ring-1 ring-ink/5">
                 <h3 className="font-display text-lg font-semibold">{f.title}</h3>
@@ -466,7 +465,7 @@ export function LandingPage() {
         <div className="mx-auto max-w-6xl px-5">
           <img src="/daydrive-logo-white.svg" alt="DayDrive" className="h-9 w-auto" />
           <div className="mt-5 space-y-2 max-w-3xl text-paper/60">
-            <p>Daydrive™ is a registered trademark © 2023 Daydrive.co.uk Limited. Authorised and regulated by the Financial Conduct Authority Firm Reference Number 407863.</p>
+            <p>Daydrive™ is a registered trademark © 2023 {market.company.tradingEntity}. Authorised and regulated by the Financial Conduct Authority Firm Reference Number 407863.</p>
             <p>Registered in {market.company.registrationJurisdiction}{market.company.webCompanyNumber ? ` under Company Registration Number ${market.company.webCompanyNumber}` : ""}. {market.company.addressTerm} — {market.company.address}.</p>
           </div>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-paper/70 font-medium">

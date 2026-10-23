@@ -42,13 +42,17 @@ describe("market configuration", () => {
     expect(marketFor("ie").country).toBe("ie");
   });
 
-  it("prices both cover types the same figures in each market's currency", () => {
-    // Both markets charge in sterling; euro remains supported by the
-    // formatter and the schema should the Irish market ever switch.
+  it("prices each market in its own currency at its own figures", () => {
     expect(marketFor("uk").currency).toBe("gbp");
-    expect(marketFor("ie").currency).toBe("gbp");
+    expect(marketFor("uk").coverTypeRates).toEqual({ PERSONAL: 1500, BUSINESS: 2500 });
+    expect(marketFor("ie").currency).toBe("eur");
+    expect(marketFor("ie").coverTypeRates).toEqual({ PERSONAL: 1800, BUSINESS: 3000 });
+  });
+
+  it("charges more for business than personal in every market", () => {
     for (const code of MARKET_CODES) {
-      expect(marketFor(code).coverTypeRates).toEqual({ PERSONAL: 1500, BUSINESS: 2500 });
+      const rates = marketFor(code).coverTypeRates;
+      expect(rates.BUSINESS).toBeGreaterThan(rates.PERSONAL);
     }
   });
 
